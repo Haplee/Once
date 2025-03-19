@@ -78,7 +78,7 @@ def borrar_registros_e_informes():
     return "✅ Todos los informes y registros han sido eliminados."
 
 # Interfaz con Streamlit
-st.title("💰 Gestión de Monedas")
+st.title("☘️ Gestión de Monedas ☘️")
 
 col1, col2 = st.columns(2)
 cliente = col1.text_input("Cuenta del Cliente:")

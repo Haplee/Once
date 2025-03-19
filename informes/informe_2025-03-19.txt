@@ -1,0 +1,16 @@
+Informe de operaciones - 2025-03-19
+========================================
+2025-03-19 15:38:14.798175 - Cliente: 0.01, Recibido: 0.01, Cambio: 0.00
+2025-03-19 15:40:02.437036 - Cliente: 0.01, Recibido: 0.01, Cambio: 0.00
+2025-03-19 15:40:05.560081 - Cliente: 0.01, Recibido: 0.01, Cambio: 0.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 50.00, Recibido: 55.00, Cambio: ✅ El cambio es: 5.00
+Cliente pagó 12.00, Recibido: 50.00, Cambio: ✅ El cambio es: 38.00
+Cliente pagó 12.00, Recibido: 50.00, Cambio: ✅ El cambio es: 38.00

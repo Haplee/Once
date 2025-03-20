@@ -69,7 +69,7 @@ Se abrirá una nueva pestaña para introducir las credenciales antes de proceder
   ```
 
 **3️⃣ Error `fatal: main cannot be resolved to branch` en Git**
-- Solución: Asegúrate de que el nombre de la rama es `main` (con minúscula):
+- Solución: Asegúrate de que el nombre de la rama es `Main` (con Mayús):
   ```sh
-  git branch -M main
+  git branch -M Main
   ```

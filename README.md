@@ -1,75 +1,73 @@
-# Once
-# Gestion de Monedas - Streamlit App
+# 📘 Gestión de Monedas - Streamlit App
 
-Este es un sistema de gestión de monedas desarrollado con **Streamlit**, que permite calcular automáticamente el cambio de un cliente, registrar operaciones y generar informes diarios.
+## 📌 Descripción
+Esta es una aplicación web creada con **Streamlit** para gestionar transacciones monetarias, calcular cambios y generar informes de operaciones.
 
-## 📌 Características
-- **Cálculo automático del cambio** cuando se introduce la cantidad recibida.
-- **Registro de operaciones** en la carpeta `registros`.
-- **Generación de informes diarios** en la carpeta `informes`.
-- **Interfaz amigable y funcional** en Streamlit.
-- **Eliminación segura de registros e informes** con autenticación.
-
----
-
-## 🚀 Instalación y ejecución
-
-### 1️⃣ Requisitos previos
-Asegúrate de tener instalado Python 3.11 o superior y **Streamlit**.
-
-```sh
-pip install streamlit
+## 🚀 Instalación y Configuración
+### 1️⃣ Clonar el repositorio (si aplica)
+```bash
+ git clone https://github.com/tu_usuario/tu_repositorio.git
+ cd tu_repositorio
 ```
 
-### 2️⃣ Clonar el repositorio
-```sh
-git clone https://github.com/Haplee/Once.git
-cd Once
+### 2️⃣ Crear y activar un entorno virtual (Opcional pero recomendado)
+#### En Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+#### En macOS/Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-### 3️⃣ Ejecutar la aplicación
-```sh
-streamlit run pp.py
+### 3️⃣ Instalar dependencias
+```bash
+pip install -r requirements.txt
+```
+(Si el archivo `requirements.txt` no existe, puedes instalar Streamlit manualmente con `pip install streamlit`.)
+
+## 🏃‍♂️ Ejecutar la Aplicación
+```bash
+streamlit run nombre_del_archivo.py
+```
+Ejemplo:
+```bash
+streamlit run app.py
 ```
 
----
+## 🛠️ Funcionalidades
+✅ **Cálculo de Cambio:** Permite ingresar el monto del cliente y el dinero recibido para calcular el cambio.  
+✅ **Registro de Operaciones:** Guarda cada transacción en un archivo de texto.  
+✅ **Generación de Informes:** Crea informes diarios con el historial de transacciones.  
+✅ **Listado de Informes:** Permite visualizar los informes generados.  
+✅ **Eliminación de Registros:** Opción para borrar todos los informes y registros.
 
-## 📂 Estructura del proyecto
-```plaintext
-📁 Once/
-│── pp.py                 # Código principal de la app en Streamlit
-│── README.md             # Documentación del proyecto
-│── 📂 registros/          # Archivos de registros de transacciones
-│── 📂 informes/           # Archivos de informes generados
+## 📂 Estructura de Archivos
+```
+📂 proyecto
+│-- app.py  # Código principal de la aplicación
+│-- 📂 registros  # Carpeta donde se almacenan los registros
+│-- 📂 informes   # Carpeta donde se guardan los informes generados
+│-- requirements.txt  # Dependencias necesarias
 ```
 
----
+## 🔧 Solución de Problemas
+Si tienes problemas al ejecutar la app, prueba lo siguiente:
+1. **Verificar la versión de Python**
+   ```bash
+   python --version
+   ```
+   Asegúrate de tener **Python 3.7+**.
+2. **Reinstalar dependencias**
+   ```bash
+   pip install --upgrade --force-reinstall -r requirements.txt
+   ```
+3. **Ejecutar en otro puerto (en caso de conflicto)**
+   ```bash
+   streamlit run app.py --server.port=8502
+   ```
 
-## 🔐 Autenticación para eliminar archivos
-Para borrar los registros e informes, es necesario autenticarse con:
-- **Usuario:** `admin`
-- **Contraseña:** `suerte2025`
-
-Se abrirá una nueva pestaña para introducir las credenciales antes de proceder a la eliminación.
-
----
-
-## 🛠️ Posibles errores y soluciones
-
-**1️⃣ Error `streamlit: command not found`**
-- Solución: Asegúrate de tener **Streamlit** instalado:
-  ```sh
-  pip install streamlit
-  ```
-
-**2️⃣ Error `UnicodeEncodeError` al escribir archivos**
-- Solución: Modifica el código para usar UTF-8 al escribir archivos:
-  ```python
-  open('archivo.txt', 'w', encoding='utf-8')
-  ```
-
-**3️⃣ Error `fatal: main cannot be resolved to branch` en Git**
-- Solución: Asegúrate de que el nombre de la rama es `Main` (con Mayús):
-  ```sh
-  git branch -M Main
-  ```
+## 📝 Autor
+- **[Fran Vidal]** 

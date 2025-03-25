@@ -1,0 +1,1 @@
+16:00:36 - Cliente pagó 200.00, Recibido: 300.00, Cambio: 100.00

@@ -105,5 +105,5 @@ Abre la consola del navegador (F12) y revisa si hay errores relacionados con la 
 
 ## 📝 Autor
 
-[Fran Vidal]
+*Fran Vidal*
 

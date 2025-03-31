@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculadora de Cambio</title>
+  <!-- Icono personalizado con respaldo -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='icono.ico') }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Estilos personalizados -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#">Calculadora de Cambio</a>
+    </div>
+  </nav>
+  <main class="container">
+    <section class="card mx-auto mt-5 p-4">
+      <h3 class="text-center mb-4">Calculadora de Cambio</h3>
+      <form id="calcForm" method="POST" action="/calcular">
+        <div class="mb-3">
+          <label for="cuenta" class="form-label">Cuenta del Cliente (€)</label>
+          <input type="number" step="any" class="form-control" id="cuenta" name="cuenta" 
+                 placeholder="Ej. 50.00" aria-label="Monto de la cuenta" required>
+        </div>
+        <div class="mb-3">
+          <label for="recibido" class="form-label">Dinero Recibido (€)</label>
+          <input type="number" step="any" class="form-control" id="recibido" name="recibido" 
+                 placeholder="Ej. 100.00" aria-label="Dinero recibido" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Calcular Cambio</button>
+      </form>
+      {% if resultado %}
+      <div class="alert alert-info mt-4" role="alert">
+        {{ resultado }}
+      </div>
+      {% endif %}
+      <div id="mensaje" class="alert mt-4 d-none"></div>
+      <button id="toggleSpeech" class="btn btn-secondary w-100 mt-3">Activar Voz</button>
+    </section>
+  </main>
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    let speechEnabled = true;
+
+    // Función para remover emoticonos usando expresión regular
+    function removeEmojis(text) {
+      return text.replace(/[\u2700-\u27BF\uE000-\uF8FF\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '');
+    }
+
+    // Función para reproducir texto en voz alta sin emoticonos
+    function speakText(text) {
+      if (speechEnabled && 'speechSynthesis' in window) {
+        let cleanText = removeEmojis(text);
+        let utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = 'es-ES';
+        window.speechSynthesis.speak(utterance);
+      } else if (!speechEnabled) {
+        console.log("Síntesis de voz desactivada.");
+      } else {
+        alert("Tu navegador no soporta la síntesis de voz.");
+      }
+    }
+
+    // Manejar el envío del formulario vía AJAX
+    document.getElementById("calcForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      const cuenta = document.getElementById("cuenta").value;
+      const recibido = document.getElementById("recibido").value;
+      if (!cuenta || !recibido) {
+        alert("Por favor, ingresa ambos valores.");
+        return;
+      }
+      const formData = new FormData(event.target);
+      try {
+        const response = await fetch("/calcular", {
+          method: "POST",
+          body: formData
+        });
+        const data = await response.json();
+        const mensajeDiv = document.getElementById("mensaje");
+        if (response.ok) {
+          mensajeDiv.classList.remove("d-none", "alert-danger");
+          mensajeDiv.classList.add("alert-info");
+          mensajeDiv.innerText = data.mensaje;
+          speakText(data.mensaje);
+        } else {
+          mensajeDiv.classList.remove("d-none", "alert-info");
+          mensajeDiv.classList.add("alert-danger");
+          mensajeDiv.innerText = data.error;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    });
+
+    // Manejar el botón de activar/desactivar voz
+    document.getElementById("toggleSpeech").addEventListener("click", function() {
+      speechEnabled = !speechEnabled;
+      this.innerText = speechEnabled ? "Desactivar Voz" : "Activar Voz";
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,2 @@
-streamlit
+flask
 pyttsx3
-pyinstaller
-mysql-connector-python

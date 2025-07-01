@@ -26,14 +26,13 @@ venv\Scripts\activate
 
 ### 3️⃣ Instalar dependencias
 
-Instala las dependencias necesarias (en este caso, Flask):
+Instala las dependencias. El proyecto utiliza Flask.
 
+Puedes instalar Flask directamente:
 ```bash
 pip install flask
 ```
-
-Si existe un archivo `requirements.txt`, puedes instalar todas las dependencias con:
-
+O, si prefieres usar el archivo `requirements.txt` (que actualmente solo contiene `flask`):
 ```bash
 pip install -r requirements.txt
 ```
@@ -47,7 +46,7 @@ No es necesaria ninguna configuración adicional, ya que la aplicación está li
 Para iniciar la aplicación, ejecuta el siguiente comando en la terminal:
 
 ```bash
-python app.py
+python pp.py
 ```
 
 Una vez que el servidor esté corriendo, abre tu navegador y visita `http://localhost:5000` para usar la calculadora de cambio.
@@ -55,22 +54,23 @@ Una vez que el servidor esté corriendo, abre tu navegador y visita `http://loca
 ## 🛠️ Funcionalidades
 
 - ✅ **Cálculo de Cambio**: Calcula el cambio a devolver basado en la cuenta y el dinero recibido.
-- ✅ **Manejo de Solicitudes**: Soporta solicitudes GET y POST para interactuar con el usuario.
-- ✅ **Resultados en JSON y HTML**: Devuelve los resultados tanto en formato JSON (para AJAX) como en HTML.
-- ✅ **Síntesis de Voz**: Lee los mensajes de resultado en voz alta (con opción de activar/desactivar).
-- ✅ **Diseño Responsivo y Accesible**: Interfaz adaptada a diferentes dispositivos y accesible para usuarios con lectores de pantalla.
+ - ✅ **Manejo de Solicitudes**: Soporta solicitudes GET (para la página) y POST (para el cálculo AJAX).
+ - ✅ **Resultados en JSON y HTML**: La API de cálculo (`/calcular`) devuelve JSON. El resultado se muestra dinámicamente en el HTML.
+ - ✅ **Síntesis de Voz (Navegador)**: Lee los mensajes de resultado en voz alta utilizando la API de Síntesis de Voz del navegador web (opción de activar/desactivar).
+ - ✅ **Diseño Responsivo y Accesible**: Interfaz adaptada a diferentes dispositivos (usando Bootstrap 5) y con atributos ARIA para mejorar la accesibilidad.
 
 ## 📂 Estructura de Archivos
 
 ```
 📂 calculadora_cambio
-│-- app.py              # Script principal de Flask
+│-- pp.py               # Script principal de Flask
 │-- 📂 static           # Carpeta para archivos estáticos
-│   │-- styles.css      # Estilos CSS personalizados
-│   │-- icono.png       # Icono personalizado
-│   │-- default-icon.png# Icono de respaldo
+│   │-- static.css      # Estilos CSS personalizados
+│   │-- icono.ico       # Icono de la aplicación (usado en el HTML)
 │-- 📂 templates        # Carpeta para plantillas HTML
 │   │-- index.html      # Plantilla principal de la aplicación
+# (Nota: script.js también está en static/ pero es opcional listarlo si se considera parte de la implementación de index.html)
+# (Nota: README no listaba icono.ico que sí está, y listaba icono.png/default-icon.png que no están)
 ```
 
 ## 🔧 Solución de Problemas
@@ -93,7 +93,7 @@ pip install flask
 
 ### Revisar la ubicación de los archivos estáticos
 
-Asegúrate de que los archivos `styles.css`, `icono.png` y `default-icon.png` estén en la carpeta `static`. Si el icono no se carga, verifica la ruta en el HTML.
+Asegúrate de que los archivos `static.css` (hoja de estilos) y `icono.ico` (icono de la pestaña) estén en la carpeta `static/`. Si estos no se cargan correctamente, verifica las rutas en `templates/index.html` y los nombres de los archivos. El archivo JavaScript `script.js` también reside en `static/`.
 
 ### Comprobar la conexión del servidor
 

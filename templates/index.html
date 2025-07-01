@@ -8,16 +8,17 @@
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='icono.ico') }}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Estilos personalizados -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
 </head>
 <body>
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container">
-      <a class="navbar-brand" href="#">Calculadora de Cambio</a>
+      <a class="navbar-brand" href="{{ url_for('index') }}">Calculadora de Cambio</a>
     </div>
   </nav>
   <main class="container">
-    <section class="card mx-auto mt-5 p-4">
+    <section class="card mx-auto mt-5 p-4 position-relative"> <!-- position-relative para el botón de tema -->
+      <button id="theme-toggle-button" class="btn btn-outline-secondary btn-sm">Modo Oscuro</button> <!-- Botón de tema -->
       <h3 class="text-center mb-4">Calculadora de Cambio</h3>
       <form id="calcForm" method="POST" action="/calcular">
         <div class="mb-3">
@@ -30,14 +31,9 @@
           <input type="number" step="any" class="form-control" id="recibido" name="recibido" 
               placeholder="Ej. 100.00" aria-label="Dinero recibido" required>
         </div>
-        <button type="submit" class="btn btn-primary w-100">Calcular Cambio</button>
+        <button type="submit" class="btn btn-primary w-100" id="calcularBtn">Calcular Cambio</button>
       </form>
-      {% if resultado %}
-      <div class="alert alert-info mt-4" role="alert">
-        {{ resultado }}
-      </div>
-      {% endif %}
-      <div id="mensaje" class="alert mt-4 d-none"></div>
+      <div id="mensaje" class="alert mt-4 d-none" role="alert"></div>
       <button id="toggleSpeech" class="btn btn-secondary w-100 mt-3">Activar Voz</button>
     </section>
   </main>
@@ -60,20 +56,38 @@
         window.speechSynthesis.speak(utterance);
       } else if (!speechEnabled) {
         console.log("Síntesis de voz desactivada.");
-      } else {
-        alert("Tu navegador no soporta la síntesis de voz.");
+      } else if ('speechSynthesis' in window === false) { // Solo advertir si la API no existe
+        console.warn("Tu navegador no soporta la síntesis de voz.");
       }
     }
 
     // Manejar el envío del formulario vía AJAX
-    document.getElementById("calcForm").addEventListener("submit", async function(event) {
+    const calcForm = document.getElementById("calcForm");
+    const calcButton = document.getElementById("calcularBtn");
+    const originalButtonText = calcButton.innerHTML; // Guardar el texto original del botón
+    const cuentaInput = document.getElementById("cuenta");
+    const recibidoInput = document.getElementById("recibido");
+    const mensajeDiv = document.getElementById("mensaje");
+
+
+    calcForm.addEventListener("submit", async function(event) {
       event.preventDefault();
-      const cuenta = document.getElementById("cuenta").value;
-      const recibido = document.getElementById("recibido").value;
-      if (!cuenta || !recibido) {
-        alert("Por favor, ingresa ambos valores.");
+
+      // Validación básica en el cliente antes de enviar
+      // Los campos son 'required' en HTML5, pero una doble verificación no hace daño.
+      if (!cuentaInput.value.trim() || !recibidoInput.value.trim()) {
+        mensajeDiv.classList.remove("d-none", "alert-info");
+        mensajeDiv.classList.add("alert-danger");
+        mensajeDiv.innerText = "Por favor, ingresa ambos valores.";
+        // Ocultar mensaje después de un tiempo o si se reintenta
         return;
       }
+
+      // Deshabilitar botón y mostrar spinner
+      calcButton.disabled = true;
+      calcButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculando...`;
+      mensajeDiv.classList.add("d-none"); // Ocultar mensaje anterior
+
       const formData = new FormData(event.target);
       try {
         const response = await fetch("/calcular", {
@@ -81,26 +95,43 @@
           body: formData
         });
         const data = await response.json();
-        const mensajeDiv = document.getElementById("mensaje");
+
         if (response.ok) {
           mensajeDiv.classList.remove("d-none", "alert-danger");
           mensajeDiv.classList.add("alert-info");
-          mensajeDiv.innerText = data.mensaje;
+          mensajeDiv.innerHTML = `El cambio es: <strong>${data.cambio.toFixed(2)} euros</strong>.`;
           speakText(data.mensaje);
         } else {
           mensajeDiv.classList.remove("d-none", "alert-info");
           mensajeDiv.classList.add("alert-danger");
-          mensajeDiv.innerText = data.error;
+          mensajeDiv.innerText = data.error; // data.error viene del backend (JSON)
         }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error en la petición fetch:", error);
+        mensajeDiv.classList.remove("d-none", "alert-info");
+        mensajeDiv.classList.add("alert-danger");
+        mensajeDiv.innerText = "Error al conectar con el servidor. Inténtalo de nuevo.";
+      } finally {
+        // Rehabilitar botón y restaurar texto
+        calcButton.disabled = false;
+        calcButton.innerHTML = originalButtonText;
       }
     });
 
     // Manejar el botón de activar/desactivar voz
-    document.getElementById("toggleSpeech").addEventListener("click", function() {
+    const toggleSpeechButton = document.getElementById("toggleSpeech");
+    toggleSpeechButton.addEventListener("click", function() {
       speechEnabled = !speechEnabled;
-      this.innerText = speechEnabled ? "Desactivar Voz" : "Activar Voz";
+      toggleSpeechButton.innerText = speechEnabled ? "Desactivar Voz" : "Activar Voz";
+      if (speechEnabled) {
+        // Opcional: Dar feedback auditivo al activar.
+        // speakText("Síntesis de voz activada.");
+      } else {
+        // Si se desactiva la voz, cancelar cualquier habla pendiente.
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+      }
     });
   </script>
 </body>

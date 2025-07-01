@@ -17,7 +17,8 @@
     </div>
   </nav>
   <main class="container">
-    <section class="card mx-auto mt-5 p-4">
+    <section class="card mx-auto mt-5 p-4 position-relative"> <!-- position-relative para el botón de tema -->
+      <button id="theme-toggle-button" class="btn btn-outline-secondary btn-sm">Modo Oscuro</button> <!-- Botón de tema -->
       <h3 class="text-center mb-4">Calculadora de Cambio</h3>
       <form id="calcForm" method="POST" action="/calcular">
         <div class="mb-3">

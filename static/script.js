@@ -35,6 +35,32 @@ let speechEnabled = true;
         toggleSpeechButton.innerText = speechEnabled ? "Desactivar Voz" : "Activar Voz";
     }
 
+    // Lógica para el cambio de tema (Modo Oscuro/Claro)
+    const themeToggleButton = document.getElementById("theme-toggle-button");
+    const bodyElement = document.body;
+
+    function applyTheme(theme) {
+        if (theme === "dark") {
+            bodyElement.classList.add("theme-dark");
+            themeToggleButton.innerText = "Modo Claro";
+        } else {
+            bodyElement.classList.remove("theme-dark");
+            themeToggleButton.innerText = "Modo Oscuro";
+        }
+    }
+
+    if (themeToggleButton) {
+        // Aplicar tema guardado al cargar la página
+        const savedTheme = localStorage.getItem("theme") || "light"; // Default to light
+        applyTheme(savedTheme);
+
+        themeToggleButton.addEventListener("click", () => {
+            let newTheme = bodyElement.classList.contains("theme-dark") ? "light" : "dark";
+            applyTheme(newTheme);
+            localStorage.setItem("theme", newTheme);
+        });
+    }
+
     if (calcForm) { // Asegurarse de que el formulario exista antes de añadir el listener
         calcForm.addEventListener("submit", async function(event) {
           event.preventDefault();

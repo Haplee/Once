@@ -2,7 +2,11 @@
 
 ## 📌 Descripción
 
-Este proyecto es una aplicación web desarrollada con Flask que permite calcular el cambio a devolver a un cliente basado en el monto de la cuenta y el dinero recibido. La aplicación incluye un frontend en HTML y CSS para una experiencia de usuario intuitiva, con características como síntesis de voz y un diseño responsivo.
+Este proyecto es una aplicación web desarrollada con Flask que permite calcular el cambio a devolver a un cliente basado en el monto de la cuenta y el dinero recibido. La aplicación ha sido actualizada para incluir:
+- Un diseño responsivo que se adapta a diferentes dispositivos.
+- Interfaz con los colores corporativos de la ONCE (verde, amarillo y blanco como principales).
+- Funcionalidad de Modo Oscuro para mejorar la accesibilidad y preferencia del usuario.
+- Síntesis de voz de los resultados a través del navegador.
 
 ## 🚀 Instalación y Configuración
 
@@ -57,7 +61,10 @@ Una vez que el servidor esté corriendo, abre tu navegador y visita `http://loca
  - ✅ **Manejo de Solicitudes**: Soporta solicitudes GET (para la página) y POST (para el cálculo AJAX).
  - ✅ **Resultados en JSON y HTML**: La API de cálculo (`/calcular`) devuelve JSON. El resultado se muestra dinámicamente en el HTML.
  - ✅ **Síntesis de Voz (Navegador)**: Lee los mensajes de resultado en voz alta utilizando la API de Síntesis de Voz del navegador web (opción de activar/desactivar).
- - ✅ **Diseño Responsivo y Accesible**: Interfaz adaptada a diferentes dispositivos (usando Bootstrap 5) y con atributos ARIA para mejorar la accesibilidad.
+ - ✅ **Diseño Responsivo**: Interfaz adaptada a diferentes dispositivos (usando Bootstrap 5).
+ - ✅ **Colores Corporativos ONCE**: La interfaz utiliza una paleta de colores basada en el verde, amarillo y blanco característicos de la ONCE.
+ - ✅ **Modo Oscuro**: Incluye un interruptor para alternar entre un tema claro y un tema oscuro, con persistencia de la preferencia del usuario.
+ - ✅ **Accesibilidad**: Uso de atributos ARIA y buen contraste de colores (considerado en ambos temas).
 
 ## 📂 Estructura de Archivos
 

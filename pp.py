@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import logging
+import speech_recognition as sr
+import io
 
 # Inicializar la aplicación Flask
 app = Flask(__name__, static_folder="static")
@@ -7,14 +9,16 @@ app = Flask(__name__, static_folder="static")
 # Configurar logging básico para depuración
 logging.basicConfig(level=logging.DEBUG)
 
+# Frases clave para detectar en el reconocimiento
+PALABRAS_CLAVE = [
+    "cuenta del cliente",
+    "el cliente ha entregado",
+    "dinero recibido",
+    "cambio",
+    "total a pagar"
+]
+
 def calcular_cambio(cuenta, recibido):
-    """
-    Calcula el cambio a devolver basado en la cuenta y el dinero recibido.
-    
-    :param cuenta: float, monto de la cuenta
-    :param recibido: float, dinero recibido
-    :return: tuple, (mensaje, cambio) o (error, None) en caso de fallo
-    """
     if cuenta <= 0 or recibido <= 0:
         return "Los valores deben ser positivos.", None
     if recibido < cuenta:
@@ -25,14 +29,10 @@ def calcular_cambio(cuenta, recibido):
 
 @app.route("/", methods=["GET"])
 def index():
-    """Maneja la página principal."""
-    # La lógica POST fue eliminada ya que el formulario usa AJAX a /calcular.
-    # 'resultado' ya no se pasa ya que fue eliminado del template.
     return render_template("index.html")
 
 @app.route("/calcular", methods=["POST"])
 def calcular():
-    """Calcula el cambio y devuelve un JSON con el resultado."""
     cuenta_str = request.form.get("cuenta")
     recibido_str = request.form.get("recibido")
 
@@ -47,10 +47,48 @@ def calcular():
 
     mensaje, cambio = calcular_cambio(cuenta, recibido)
 
-    if cambio is None: # Error detectado en calcular_cambio (ej. dinero insuficiente, valores no positivos)
+    if cambio is None:
         return jsonify({"error": mensaje}), 400
 
     return jsonify({"mensaje": mensaje, "cambio": cambio})
+
+@app.route("/reconocer-voz", methods=["POST"])
+def reconocer_voz():
+    """
+    Ruta para recibir un archivo de audio y detectar palabras clave.
+    Se espera un archivo en 'audio' en formato WAV u otro compatible.
+    """
+    if "audio" not in request.files:
+        return jsonify({"error": "No se recibió archivo de audio."}), 400
+
+    audio_file = request.files["audio"]
+
+    if audio_file.filename == "":
+        return jsonify({"error": "Archivo de audio vacío."}), 400
+
+    # Usar SpeechRecognition para procesar el audio recibido
+    r = sr.Recognizer()
+    try:
+        audio_bytes = audio_file.read()
+        audio_data = sr.AudioFile(io.BytesIO(audio_bytes))
+        with audio_data as source:
+            audio = r.record(source)
+
+        texto = r.recognize_google(audio, language="es-ES")
+        logging.debug(f"Texto reconocido: {texto}")
+
+        # Buscar palabras clave en el texto
+        detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
+
+        if detectadas:
+            return jsonify({"mensaje": "Palabras clave detectadas", "frases": detectadas, "texto": texto})
+        else:
+            return jsonify({"mensaje": "No se detectaron palabras clave.", "texto": texto})
+
+    except sr.UnknownValueError:
+        return jsonify({"error": "No se pudo entender el audio."}), 400
+    except sr.RequestError as e:
+        return jsonify({"error": f"Error en el servicio de reconocimiento: {e}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

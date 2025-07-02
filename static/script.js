@@ -1,122 +1,62 @@
-let speechEnabled = true;
+let mediaRecorder;
+let audioChunks = [];
 
-    // Función para remover emoticonos usando expresión regular
-    function removeEmojis(text) {
-      return text.replace(/[\u2700-\u27BF\uE000-\uF8FF\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '');
-    }
+const startBtn = document.getElementById("startRecording");
+const stopBtn = document.getElementById("stopRecording");
+const resultDiv = document.getElementById("voiceResult");
 
-    // Función para reproducir texto en voz alta sin emoticonos
-    function speakText(text) {
-      if (speechEnabled && 'speechSynthesis' in window) {
-        let cleanText = removeEmojis(text); // Limpieza de emojis, aunque no se usan actualmente
-        let utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = 'es-ES'; // Correcto para español
-        window.speechSynthesis.speak(utterance);
-      } else if (!speechEnabled) {
-        console.log("Síntesis de voz desactivada."); // Log para desarrollador
-      } else if ('speechSynthesis' in window === false) { // Solo advertir si la API no existe
-        console.warn("Tu navegador no soporta la síntesis de voz.");
-      }
-    }
+stopBtn.disabled = true;
 
-    // Se espera que el DOM esté cargado para acceder a estos elementos.
-    // Si este script se carga en el <head> con defer, está bien.
-    // Si se carga al final del <body>, también está bien.
-    const calcForm = document.getElementById("calcForm");
-    const calcButton = document.getElementById("calcularBtn");
-    const originalButtonText = calcButton.innerHTML;
-    const cuentaInput = document.getElementById("cuenta");
-    const recibidoInput = document.getElementById("recibido");
-    const mensajeDiv = document.getElementById("mensaje");
-    const toggleSpeechButton = document.getElementById("toggleSpeech");
+startBtn.addEventListener("click", async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
 
-    // Inicializar el texto del botón de voz según el estado inicial
-    if (toggleSpeechButton) {
-        toggleSpeechButton.innerText = speechEnabled ? "Desactivar Voz" : "Activar Voz";
-    }
+    mediaRecorder.start();
+    audioChunks = [];
 
-    // Lógica para el cambio de tema (Modo Oscuro/Claro)
-    const themeToggleButton = document.getElementById("theme-toggle-button");
-    const bodyElement = document.body;
+    mediaRecorder.addEventListener("dataavailable", event => {
+      audioChunks.push(event.data);
+    });
 
-    function applyTheme(theme) {
-        if (theme === "dark") {
-            bodyElement.classList.add("theme-dark");
-            themeToggleButton.innerText = "Modo Claro";
-        } else {
-            bodyElement.classList.remove("theme-dark");
-            themeToggleButton.innerText = "Modo Oscuro";
-        }
-    }
+    mediaRecorder.addEventListener("stop", async () => {
+      const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+      const formData = new FormData();
+      formData.append("audio_data", audioBlob, "grabacion.wav");
 
-    if (themeToggleButton) {
-        // Aplicar tema guardado al cargar la página
-        const savedTheme = localStorage.getItem("theme") || "light"; // Default to light
-        applyTheme(savedTheme);
+      resultDiv.innerText = "Procesando reconocimiento...";
 
-        themeToggleButton.addEventListener("click", () => {
-            let newTheme = bodyElement.classList.contains("theme-dark") ? "light" : "dark";
-            applyTheme(newTheme);
-            localStorage.setItem("theme", newTheme);
+      try {
+        const response = await fetch("/reconocer-voz", {
+          method: "POST",
+          body: formData
         });
-    }
+        const data = await response.json();
 
-    if (calcForm) { // Asegurarse de que el formulario exista antes de añadir el listener
-        calcForm.addEventListener("submit", async function(event) {
-          event.preventDefault();
-
-          if (!cuentaInput.value.trim() || !recibidoInput.value.trim()) {
-            mensajeDiv.classList.remove("d-none", "alert-info");
-            mensajeDiv.classList.add("alert-danger");
-            mensajeDiv.innerText = "Por favor, ingresa ambos valores.";
-            return;
-          }
-
-          calcButton.disabled = true;
-          calcButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Calculando...`;
-          mensajeDiv.classList.add("d-none");
-
-          const formData = new FormData(event.target);
-          try {
-            const response = await fetch("/calcular", {
-              method: "POST",
-              body: formData
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-              mensajeDiv.classList.remove("d-none", "alert-danger");
-              mensajeDiv.classList.add("alert-info");
-              mensajeDiv.innerHTML = `El cambio es: <strong>${data.cambio.toFixed(2)} euros</strong>.`;
-              speakText(data.mensaje);
-            } else {
-              mensajeDiv.classList.remove("d-none", "alert-info");
-              mensajeDiv.classList.add("alert-danger");
-              mensajeDiv.innerText = data.error;
-            }
-          } catch (error) {
-            console.error("Error en la petición fetch:", error);
-            mensajeDiv.classList.remove("d-none", "alert-info");
-            mensajeDiv.classList.add("alert-danger");
-            mensajeDiv.innerText = "Error al conectar con el servidor. Inténtalo de nuevo.";
-          } finally {
-            calcButton.disabled = false;
-            calcButton.innerHTML = originalButtonText;
-          }
-        });
-    }
-
-
-    if (toggleSpeechButton) { // Asegurarse de que el botón exista
-        toggleSpeechButton.addEventListener("click", function() {
-          speechEnabled = !speechEnabled;
-          toggleSpeechButton.innerText = speechEnabled ? "Desactivar Voz" : "Activar Voz";
-          if (speechEnabled) {
-            // speakText("Síntesis de voz activada.");
+        if (response.ok) {
+          if(data.texto && data.texto.trim() !== "") {
+            resultDiv.innerText = `Texto reconocido: ${data.texto}`;
           } else {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            resultDiv.innerText = data.mensaje || "No se reconoció texto.";
           }
-        });
-    }
+        } else {
+          resultDiv.innerText = `Error: ${data.error || "Error desconocido"}`;
+        }
+      } catch (error) {
+        resultDiv.innerText = "Error en la conexión con el servidor.";
+      }
+    });
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+
+  } catch (err) {
+    alert("No se pudo acceder al micrófono: " + err);
+  }
+});
+
+stopBtn.addEventListener("click", () => {
+  mediaRecorder.stop();
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+});

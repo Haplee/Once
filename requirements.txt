@@ -1,1 +1,4 @@
-flask
+Flask
+SpeechRecognition
+Flask-SocketIO
+gunicorn

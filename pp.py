@@ -3,6 +3,12 @@ from flask_socketio import SocketIO, emit
 import logging
 import speech_recognition as sr
 import io
+import mysql.connector
+from dotenv import load_dotenv
+import os
+
+# Cargar variables de entorno
+load_dotenv()
 
 # Inicializar la aplicación Flask y SocketIO
 app = Flask(__name__, static_folder="static")
@@ -11,6 +17,43 @@ socketio = SocketIO(app)
 
 # Configurar logging básico para depuración
 logging.basicConfig(level=logging.DEBUG)
+
+# Configuración de la base de datos
+db_config = {
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_DATABASE"),
+}
+
+def init_db():
+    try:
+        # Conexión sin especificar la base de datos para poder crearla
+        conn = mysql.connector.connect(
+            host=db_config["host"],
+            user=db_config["user"],
+            password=db_config["password"]
+        )
+        cursor = conn.cursor()
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_config['database']}")
+        conn.database = db_config['database']
+
+        # Crear tabla de cálculos si no existe
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS calculos (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                cuenta DECIMAL(10, 2),
+                recibido DECIMAL(10, 2),
+                cambio DECIMAL(10, 2),
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+        logging.info("Base de datos y tabla inicializadas correctamente.")
+    except mysql.connector.Error as err:
+        logging.error(f"Error al inicializar la base de datos: {err}")
 
 # Frases clave para detectar en el reconocimiento
 PALABRAS_CLAVE = [
@@ -53,6 +96,21 @@ def calcular():
     if cambio is None:
         return jsonify({"error": mensaje}), 400
 
+    # Guardar el cálculo en la base de datos
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO calculos (cuenta, recibido, cambio) VALUES (%s, %s, %s)",
+            (cuenta, recibido, cambio)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except mysql.connector.Error as err:
+        logging.error(f"Error al guardar en la base de datos: {err}")
+        return jsonify({"error": "Error interno al guardar el cálculo."}), 500
+
     return jsonify({"mensaje": mensaje, "cambio": cambio})
 
 @app.route("/reconocer-voz", methods=["POST"])
@@ -69,7 +127,6 @@ def reconocer_voz():
     if audio_file.filename == "":
         return jsonify({"error": "Archivo de audio vacío."}), 400
 
-    # Usar SpeechRecognition para procesar el audio recibido
     r = sr.Recognizer()
     try:
         audio_bytes = audio_file.read()
@@ -80,7 +137,6 @@ def reconocer_voz():
         texto = r.recognize_google(audio, language="es-ES")
         logging.debug(f"Texto reconocido: {texto}")
 
-        # Buscar palabras clave en el texto
         detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
 
         if detectadas:
@@ -95,16 +151,12 @@ def reconocer_voz():
 
 @socketio.on("audio_chunk")
 def handle_audio_chunk(chunk):
-    """
-    Recibe un fragmento de audio y lo procesa.
-    """
     r = sr.Recognizer()
     try:
         audio_data = sr.AudioData(chunk, 44100, 2)
         texto = r.recognize_google(audio_data, language="es-ES")
         logging.debug(f"Texto reconocido: {texto}")
 
-        # Buscar palabras clave en el texto
         detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
 
         if detectadas:
@@ -118,4 +170,5 @@ def handle_audio_chunk(chunk):
         emit("voice_result", {"error": f"Error en el servicio de reconocimiento: {e}"})
 
 if __name__ == "__main__":
+    init_db()
     socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)

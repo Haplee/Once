@@ -4,34 +4,41 @@ let audioChunks = [];
 const startBtn = document.getElementById("startRecording");
 const stopBtn = document.getElementById("stopRecording");
 const resultDiv = document.getElementById("voiceResult");
-const socket = io.connect("http://" + document.domain + ":" + location.port);
 
 stopBtn.disabled = true;
-
-socket.on("voice_result", (data) => {
-  if (data.texto) {
-    resultDiv.innerText = `Texto reconocido: ${data.texto}`;
-  } else if (data.error) {
-    resultDiv.innerText = `Error: ${data.error}`;
-  }
-});
 
 startBtn.addEventListener("click", async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
 
-    mediaRecorder.start(1000); // Enviar datos cada 1 segundo
+    mediaRecorder.start();
     audioChunks = [];
 
     mediaRecorder.addEventListener("dataavailable", event => {
-      if (event.data.size > 0) {
-        socket.emit("audio_chunk", event.data);
-      }
+      audioChunks.push(event.data);
     });
 
     mediaRecorder.addEventListener("stop", async () => {
-      // La lógica de envío de archivos a través de HTTP se puede mantener o eliminar si se prefiere WebSocket
+      const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "recording.webm");
+
+      try {
+        const response = await fetch("/reconocer-voz", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          resultDiv.innerText = `Texto reconocido: ${data.texto}`;
+        } else {
+          resultDiv.innerText = `Error: ${data.error}`;
+        }
+      } catch (error) {
+        resultDiv.innerText = "Error al conectar con el servidor.";
+      }
     });
 
     startBtn.disabled = true;
@@ -49,6 +56,75 @@ stopBtn.addEventListener("click", () => {
   stopBtn.disabled = true;
   resultDiv.innerText = "";
 });
+
+// Theme toggle
+const themeToggle = document.getElementById("theme-toggle");
+const body = document.body;
+
+themeToggle.addEventListener("click", () => {
+    body.classList.toggle("dark-mode");
+    if (body.classList.contains("dark-mode")) {
+        localStorage.setItem("theme", "dark");
+    } else {
+        localStorage.setItem("theme", "light");
+    }
+});
+
+// Check for saved theme preference
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+    body.classList.add("dark-mode");
+}
+
+
+// View interactions
+const viewInteractionsBtn = document.getElementById("viewInteractionsBtn");
+const interactionsContainer = document.getElementById("interactionsContainer");
+
+viewInteractionsBtn.addEventListener("click", async () => {
+    try {
+        const response = await fetch("/interactions");
+        const interactions = await response.json();
+
+        if (interactions.length === 0) {
+            interactionsContainer.innerHTML = "<p>No hay interacciones registradas.</p>";
+            return;
+        }
+
+        let table = `
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Cuenta</th>
+                        <th>Recibido</th>
+                        <th>Cambio</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        interactions.forEach(i => {
+            table += `
+                <tr>
+                    <td>${i.id}</td>
+                    <td>${i.timestamp}</td>
+                    <td>${i.cuenta.toFixed(2)}</td>
+                    <td>${i.recibido.toFixed(2)}</td>
+                    <td>${i.cambio.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        table += "</tbody></table>";
+        interactionsContainer.innerHTML = table;
+
+    } catch (error) {
+        interactionsContainer.innerHTML = "<p>Error al cargar las interacciones.</p>";
+    }
+});
+
 
 // Código JS para formulario calcular cambio
 const calcForm = document.getElementById("calcForm");

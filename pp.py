@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO, emit
 import logging
 import speech_recognition as sr
@@ -6,19 +7,36 @@ import io
 import mysql.connector
 from dotenv import load_dotenv
 import os
+from pydub import AudioSegment
+import datetime
 
 # Cargar variables de entorno
 load_dotenv()
 
-# Inicializar la aplicación Flask y SocketIO
+# Inicializar la aplicación Flask
 app = Flask(__name__, static_folder="static")
-app.config["SECRET_KEY"] = "secret!"
-socketio = SocketIO(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///interactions.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'tu_clave_secreta_aqui'  # Necesario para Flask-SocketIO
+
+db = SQLAlchemy(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+# Modelo de la base de datos SQLite
+class Interaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    cuenta = db.Column(db.Float, nullable=False)
+    recibido = db.Column(db.Float, nullable=False)
+    cambio = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f'<Interaction {self.id}>'
 
 # Configurar logging básico para depuración
 logging.basicConfig(level=logging.DEBUG)
 
-# Configuración de la base de datos
+# Configuración de la base de datos MySQL (opcional)
 db_config = {
     "host": os.getenv("DB_HOST"),
     "user": os.getenv("DB_USER"),
@@ -27,6 +45,13 @@ db_config = {
 }
 
 def init_db():
+    """Inicializar base de datos SQLite"""
+    with app.app_context():
+        db.create_all()
+        logging.info("Base de datos SQLite inicializada correctamente.")
+
+def init_mysql_db():
+    """Función opcional para inicializar MySQL si se prefiere usar MySQL"""
     try:
         # Conexión sin especificar la base de datos para poder crearla
         conn = mysql.connector.connect(
@@ -51,9 +76,9 @@ def init_db():
         conn.commit()
         cursor.close()
         conn.close()
-        logging.info("Base de datos y tabla inicializadas correctamente.")
+        logging.info("Base de datos MySQL y tabla inicializadas correctamente.")
     except mysql.connector.Error as err:
-        logging.error(f"Error al inicializar la base de datos: {err}")
+        logging.error(f"Error al inicializar la base de datos MySQL: {err}")
 
 # Frases clave para detectar en el reconocimiento
 PALABRAS_CLAVE = [
@@ -96,45 +121,51 @@ def calcular():
     if cambio is None:
         return jsonify({"error": mensaje}), 400
 
-    # Guardar el cálculo en la base de datos
+    # Guardar en SQLite usando SQLAlchemy
     try:
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO calculos (cuenta, recibido, cambio) VALUES (%s, %s, %s)",
-            (cuenta, recibido, cambio)
-        )
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except mysql.connector.Error as err:
-        logging.error(f"Error al guardar en la base de datos: {err}")
+        interaction = Interaction(cuenta=cuenta, recibido=recibido, cambio=cambio)
+        db.session.add(interaction)
+        db.session.commit()
+    except Exception as e:
+        logging.error(f"Error al guardar en la base de datos: {e}")
         return jsonify({"error": "Error interno al guardar el cálculo."}), 500
 
     return jsonify({"mensaje": mensaje, "cambio": cambio})
 
+@app.route("/interactions", methods=["GET"])
+def get_interactions():
+    interactions = Interaction.query.all()
+    return jsonify([
+        {
+            "id": i.id,
+            "timestamp": i.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "cuenta": i.cuenta,
+            "recibido": i.recibido,
+            "cambio": i.cambio
+        } for i in interactions
+    ])
+
 @app.route("/reconocer-voz", methods=["POST"])
 def reconocer_voz():
-    """
-    Ruta para recibir un archivo de audio y detectar palabras clave.
-    Se espera un archivo en 'audio' en formato WAV u otro compatible.
-    """
     if "audio" not in request.files:
         return jsonify({"error": "No se recibió archivo de audio."}), 400
 
     audio_file = request.files["audio"]
-
     if audio_file.filename == "":
         return jsonify({"error": "Archivo de audio vacío."}), 400
 
-    r = sr.Recognizer()
     try:
-        audio_bytes = audio_file.read()
-        audio_data = sr.AudioFile(io.BytesIO(audio_bytes))
-        with audio_data as source:
-            audio = r.record(source)
+        # Convert webm to wav
+        audio = AudioSegment.from_file(io.BytesIO(audio_file.read()), format="webm")
+        wav_data = io.BytesIO()
+        audio.export(wav_data, format="wav")
+        wav_data.seek(0)
 
-        texto = r.recognize_google(audio, language="es-ES")
+        r = sr.Recognizer()
+        with sr.AudioFile(wav_data) as source:
+            audio_data = r.record(source)
+
+        texto = r.recognize_google(audio_data, language="es-ES")
         logging.debug(f"Texto reconocido: {texto}")
 
         detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
@@ -148,14 +179,19 @@ def reconocer_voz():
         return jsonify({"error": "No se pudo entender el audio."}), 400
     except sr.RequestError as e:
         return jsonify({"error": f"Error en el servicio de reconocimiento: {e}"}), 500
+    except Exception as e:
+        logging.error(f"Error processing audio: {e}")
+        return jsonify({"error": "Error al procesar el archivo de audio."}), 500
 
+# Event handler para audio en tiempo real usando SocketIO
 @socketio.on("audio_chunk")
-def handle_audio_chunk(chunk):
+def handle_audio_chunk(data):
     r = sr.Recognizer()
     try:
-        audio_data = sr.AudioData(chunk, 44100, 2)
+        # Procesar chunk de audio recibido
+        audio_data = sr.AudioData(data, 44100, 2)
         texto = r.recognize_google(audio_data, language="es-ES")
-        logging.debug(f"Texto reconocido: {texto}")
+        logging.debug(f"Texto reconocido en tiempo real: {texto}")
 
         detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
 
@@ -168,7 +204,11 @@ def handle_audio_chunk(chunk):
         emit("voice_result", {"error": "No se pudo entender el audio."})
     except sr.RequestError as e:
         emit("voice_result", {"error": f"Error en el servicio de reconocimiento: {e}"})
+    except Exception as e:
+        logging.error(f"Error procesando chunk de audio: {e}")
+        emit("voice_result", {"error": "Error al procesar el audio."})
 
 if __name__ == "__main__":
-    init_db()
+    init_db()  # Inicializar SQLite por defecto
+    # init_mysql_db()  # Descomenta si prefieres usar MySQL
     socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)

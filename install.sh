@@ -19,11 +19,11 @@ pip install -r requirements.txt
 
 # Verificar la instalación
 echo "Verificando la instalación de las dependencias..."
-python -c "import flask"
+python -c "import fastapi"
 if [ $? -eq 0 ]; then
     echo "Las dependencias se han instalado correctamente."
 else
-    echo "Error: No se pudo importar la librería 'flask'. Por favor, revisa la instalación."
+    echo "Error: No se pudo importar la librería 'fastapi'. Por favor, revisa la instalación."
     exit 1
 fi
 

@@ -1,13 +1,27 @@
 from flask import Flask, render_template, request, jsonify
-from flask_socketio import SocketIO, emit
+from flask_sqlalchemy import SQLAlchemy
 import logging
 import speech_recognition as sr
 import io
+from pydub import AudioSegment
+import datetime
 
-# Inicializar la aplicación Flask y SocketIO
+# Inicializar la aplicación Flask
 app = Flask(__name__, static_folder="static")
-app.config["SECRET_KEY"] = "secret!"
-socketio = SocketIO(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///interactions.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Modelo de la base de datos
+class Interaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    cuenta = db.Column(db.Float, nullable=False)
+    recibido = db.Column(db.Float, nullable=False)
+    cambio = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f'<Interaction {self.id}>'
 
 # Configurar logging básico para depuración
 logging.basicConfig(level=logging.DEBUG)
@@ -53,34 +67,48 @@ def calcular():
     if cambio is None:
         return jsonify({"error": mensaje}), 400
 
+    interaction = Interaction(cuenta=cuenta, recibido=recibido, cambio=cambio)
+    db.session.add(interaction)
+    db.session.commit()
+
     return jsonify({"mensaje": mensaje, "cambio": cambio})
+
+@app.route("/interactions", methods=["GET"])
+def get_interactions():
+    interactions = Interaction.query.all()
+    return jsonify([
+        {
+            "id": i.id,
+            "timestamp": i.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "cuenta": i.cuenta,
+            "recibido": i.recibido,
+            "cambio": i.cambio
+        } for i in interactions
+    ])
 
 @app.route("/reconocer-voz", methods=["POST"])
 def reconocer_voz():
-    """
-    Ruta para recibir un archivo de audio y detectar palabras clave.
-    Se espera un archivo en 'audio' en formato WAV u otro compatible.
-    """
     if "audio" not in request.files:
         return jsonify({"error": "No se recibió archivo de audio."}), 400
 
     audio_file = request.files["audio"]
-
     if audio_file.filename == "":
         return jsonify({"error": "Archivo de audio vacío."}), 400
 
-    # Usar SpeechRecognition para procesar el audio recibido
-    r = sr.Recognizer()
     try:
-        audio_bytes = audio_file.read()
-        audio_data = sr.AudioFile(io.BytesIO(audio_bytes))
-        with audio_data as source:
-            audio = r.record(source)
+        # Convert webm to wav
+        audio = AudioSegment.from_file(io.BytesIO(audio_file.read()), format="webm")
+        wav_data = io.BytesIO()
+        audio.export(wav_data, format="wav")
+        wav_data.seek(0)
 
-        texto = r.recognize_google(audio, language="es-ES")
+        r = sr.Recognizer()
+        with sr.AudioFile(wav_data) as source:
+            audio_data = r.record(source)
+
+        texto = r.recognize_google(audio_data, language="es-ES")
         logging.debug(f"Texto reconocido: {texto}")
 
-        # Buscar palabras clave en el texto
         detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
 
         if detectadas:
@@ -92,30 +120,9 @@ def reconocer_voz():
         return jsonify({"error": "No se pudo entender el audio."}), 400
     except sr.RequestError as e:
         return jsonify({"error": f"Error en el servicio de reconocimiento: {e}"}), 500
-
-@socketio.on("audio_chunk")
-def handle_audio_chunk(chunk):
-    """
-    Recibe un fragmento de audio y lo procesa.
-    """
-    r = sr.Recognizer()
-    try:
-        audio_data = sr.AudioData(chunk, 44100, 2)
-        texto = r.recognize_google(audio_data, language="es-ES")
-        logging.debug(f"Texto reconocido: {texto}")
-
-        # Buscar palabras clave en el texto
-        detectadas = [frase for frase in PALABRAS_CLAVE if frase.lower() in texto.lower()]
-
-        if detectadas:
-            emit("voice_result", {"mensaje": "Palabras clave detectadas", "frases": detectadas, "texto": texto})
-        else:
-            emit("voice_result", {"mensaje": "No se detectaron palabras clave.", "texto": texto})
-
-    except sr.UnknownValueError:
-        emit("voice_result", {"error": "No se pudo entender el audio."})
-    except sr.RequestError as e:
-        emit("voice_result", {"error": f"Error en el servicio de reconocimiento: {e}"})
+    except Exception as e:
+        logging.error(f"Error processing audio: {e}")
+        return jsonify({"error": "Error al procesar el archivo de audio."}), 500
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)

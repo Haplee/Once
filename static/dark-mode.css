@@ -1,0 +1,27 @@
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.dark-mode .card {
+    background-color: #1e1e1e;
+    border-color: #333;
+}
+
+.dark-mode h1 {
+    color: #28a745;
+}
+
+.dark-mode button {
+    background-color: #28a745;
+}
+
+.dark-mode button:disabled {
+    background-color: #6c757d;
+}
+
+.dark-mode input[type="number"] {
+    background-color: #333;
+    color: #fff;
+    border-color: #555;
+}

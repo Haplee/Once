@@ -1,67 +1,64 @@
 # Aplicación de Calculadora de Cambio y Reconocimiento de Voz
 
-Esta es una aplicación web que combina una calculadora de cambio con un sistema de reconocimiento de voz en tiempo real.
+Esta es una aplicación web construida con Flask que proporciona una calculadora de cambio y utiliza reconocimiento de voz para procesar comandos.
 
 ## Características
 
-*   **Calculadora de Cambio:** Calcula el cambio a devolver a un cliente.
-*   **Reconocimiento de Voz:** Reconoce palabras clave en tiempo real para activar acciones.
-*   **Base de Datos MySQL:** Almacena un historial de todos los cálculos de cambio realizados.
-
-## Requisitos
-
-*   Python 3.8+
-*   MySQL Server
-*   Dependencias de Python listadas en `requirements.txt`
+*   **Calculadora de Cambio:** Calcula el cambio a devolver basado en un total y el dinero recibido.
+*   **Reconocimiento de Voz:** Procesa audio para identificar frases clave y realizar acciones (funcionalidad básica).
+*   **Historial de Interacciones:** Guarda cada cálculo en una base de datos SQLite para futuras consultas.
+*   **Modo Oscuro:** Interfaz con tema claro y oscuro.
 
 ## Instalación
 
-1.  **Clona el repositorio:**
-    ```bash
-    git clone <URL_DEL_REPOSITORIO>
-    cd <NOMBRE_DEL_REPOSITORIO>
-    ```
+La instalación se puede realizar ejecutando un único script dependiendo de tu sistema operativo.
 
-2.  **Ejecuta el script de instalación:**
-    Este script instalará todas las dependencias necesarias, incluyendo MySQL Server.
-    ```bash
-    chmod +x install.sh
-    ./install.sh
-    ```
+### Para Windows
 
-3.  **Configura la base de datos MySQL:**
-    El script de instalación te proporcionará los comandos para crear el usuario y la base de datos. Debes ejecutarlos manualmente:
-    ```sql
-    sudo mysql -e "CREATE USER 'usuario'@'localhost' IDENTIFIED BY 'usuario';"
-    sudo mysql -e "GRANT ALL PRIVILEGES ON once.* TO 'usuario'@'localhost';"
-    sudo mysql -e "FLUSH PRIVILEGES;"
-    ```
+Abre una terminal (CMD o PowerShell) y ejecuta el siguiente comando:
 
-4.  **Configura las variables de entorno:**
-    Crea un archivo `.env` en la raíz del proyecto con la siguiente información:
-    ```
-    DB_HOST=localhost
-    DB_USER=usuario
-    DB_PASSWORD=usuario
-    DB_DATABASE=once
-    ```
+```bash
+install.bat
+```
+
+El script se encargará de:
+1.  Verificar que Python y Git estén instalados.
+2.  Descargar y configurar `ffmpeg` (necesario para el procesamiento de audio).
+3.  Crear un entorno virtual.
+4.  Instalar todas las dependencias de Python.
+
+### Para Linux y macOS
+
+Abre una terminal y ejecuta el siguiente comando:
+
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+El script se encargará de:
+1.  Instalar `ffmpeg` usando el gestor de paquetes del sistema.
+2.  Crear un entorno virtual.
+3.  Instalar todas las dependencias de Python.
 
 ## Uso
 
-1.  **Inicia la aplicación:**
+Después de que la instalación esté completa, sigue estos pasos para iniciar la aplicación:
+
+1.  **Activa el entorno virtual:**
+    *   **Windows:** `venv\Scripts\activate`
+    *   **Linux/macOS:** `source venv/bin/activate`
+
+2.  **Inicia la aplicación Flask:**
     ```bash
-    python3 pp.py
+    python pp.py
     ```
 
-2.  **Abre tu navegador:**
-    Ve a `http://localhost:5000` para acceder a la aplicación.
+3.  **Abre tu navegador:**
+    Ve a `http://127.0.0.1:5000` para acceder a la aplicación.
 
-## Cómo funciona
+## Cómo Funciona
 
-*   **Frontend:** La interfaz de usuario está construida con HTML, CSS y JavaScript. Utiliza `Socket.IO` para la comunicación en tiempo real con el backend.
-*   **Backend:** El backend está desarrollado con Flask y Flask-SocketIO. Se encarga de:
-    *   Servir la página web.
-    *   Manejar las peticiones de la calculadora de cambio.
-    *   Procesar el audio en tiempo real para el reconocimiento de voz.
-    *   Conectarse a la base de datos MySQL para almacenar los cálculos.
-*   **Base de Datos:** Se utiliza MySQL para almacenar un historial de todos los cálculos de cambio. La tabla `calculos` se crea automáticamente al iniciar la aplicación si no existe.
+*   **Backend:** Construido con Flask y Flask-SocketIO. Se encarga de la lógica de negocio, el reconocimiento de voz y la gestión de la base de datos.
+*   **Frontend:** HTML, CSS y JavaScript simple. Se comunica con el backend a través de peticiones HTTP y WebSockets.
+*   **Base de Datos:** Utiliza SQLite para almacenar el historial de cálculos, lo que simplifica la configuración al no requerir un servidor de base de datos externo.

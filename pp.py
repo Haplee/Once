@@ -4,14 +4,8 @@ from flask_socketio import SocketIO, emit
 import logging
 import speech_recognition as sr
 import io
-import mysql.connector
-from dotenv import load_dotenv
-import os
 from pydub import AudioSegment
 import datetime
-
-# Cargar variables de entorno
-load_dotenv()
 
 # Inicializar la aplicación Flask
 app = Flask(__name__, static_folder="static")
@@ -36,49 +30,11 @@ class Interaction(db.Model):
 # Configurar logging básico para depuración
 logging.basicConfig(level=logging.DEBUG)
 
-# Configuración de la base de datos MySQL (opcional)
-db_config = {
-    "host": os.getenv("DB_HOST"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "database": os.getenv("DB_DATABASE"),
-}
-
 def init_db():
     """Inicializar base de datos SQLite"""
     with app.app_context():
         db.create_all()
         logging.info("Base de datos SQLite inicializada correctamente.")
-
-def init_mysql_db():
-    """Función opcional para inicializar MySQL si se prefiere usar MySQL"""
-    try:
-        # Conexión sin especificar la base de datos para poder crearla
-        conn = mysql.connector.connect(
-            host=db_config["host"],
-            user=db_config["user"],
-            password=db_config["password"]
-        )
-        cursor = conn.cursor()
-        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_config['database']}")
-        conn.database = db_config['database']
-
-        # Crear tabla de cálculos si no existe
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS calculos (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                cuenta DECIMAL(10, 2),
-                recibido DECIMAL(10, 2),
-                cambio DECIMAL(10, 2),
-                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        conn.commit()
-        cursor.close()
-        conn.close()
-        logging.info("Base de datos MySQL y tabla inicializadas correctamente.")
-    except mysql.connector.Error as err:
-        logging.error(f"Error al inicializar la base de datos MySQL: {err}")
 
 # Frases clave para detectar en el reconocimiento
 PALABRAS_CLAVE = [
@@ -209,6 +165,5 @@ def handle_audio_chunk(data):
         emit("voice_result", {"error": "Error al procesar el audio."})
 
 if __name__ == "__main__":
-    init_db()  # Inicializar SQLite por defecto
-    # init_mysql_db()  # Descomenta si prefieres usar MySQL
+    init_db()
     socketio.run(app, debug=True, host="0.0.0.0", port=5000, allow_unsafe_werkzeug=True)

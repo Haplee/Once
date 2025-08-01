@@ -62,9 +62,10 @@ if not exist "%FFMPEG_DIR%" (
 
     REM Move contents from the extracted subfolder to the main ffmpeg dir
     for /d %%i in (ffmpeg_temp\*) do (
-        move "%%i" "%FFMPEG_DIR%"
+        move "%%i\*" "%FFMPEG_DIR%"
+        rmdir "%%i"
     )
-    rmdir ffmpeg_temp
+    rmdir "ffmpeg_temp"
     del "%FFMPEG_ZIP_FILE%"
     echo [SUCCESS] FFmpeg has been downloaded and extracted.
 ) else (
@@ -90,8 +91,7 @@ echo.
 
 REM 4. Activate virtual environment and install dependencies
 echo [STEP 4/5] Installing Python dependencies...
-call "%VENV_NAME%\Scripts\activate.bat"
-pip install -r requirements.txt
+call "%VENV_NAME%\Scripts\python.exe" -m pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Failed to install dependencies from requirements.txt.
     exit /b 1

@@ -1,177 +1,188 @@
-let mediaRecorder;
-let audioChunks = [];
+// --- Lógica de reconocimiento de voz con Web Speech API ---
 
 const startBtn = document.getElementById("startRecording");
 const stopBtn = document.getElementById("stopRecording");
 const resultDiv = document.getElementById("voiceResult");
 
-stopBtn.disabled = true;
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
 
-startBtn.addEventListener("click", async () => {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.lang = "es-ES";
+    recognition.interimResults = false;
 
-    mediaRecorder.start();
-    audioChunks = [];
-
-    mediaRecorder.addEventListener("dataavailable", event => {
-      audioChunks.push(event.data);
-    });
-
-    mediaRecorder.addEventListener("stop", async () => {
-      const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "recording.webm");
-
-      try {
-        const response = await fetch("/reconocer-voz", {
-          method: "POST",
-          body: formData,
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-          resultDiv.innerText = `Texto reconocido: ${data.texto}`;
-        } else {
-          resultDiv.innerText = `Error: ${data.error}`;
+    startBtn.addEventListener("click", () => {
+        try {
+            recognition.start();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            resultDiv.innerText = "Escuchando...";
+        } catch(e) {
+            // Esto puede pasar si el reconocimiento ya ha empezado
+            console.error(e);
         }
-      } catch (error) {
-        resultDiv.innerText = "Error al conectar con el servidor.";
-      }
     });
 
+    stopBtn.addEventListener("click", () => {
+        recognition.stop();
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        resultDiv.innerText = "";
+    });
+
+    recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+                transcript += event.results[i][0].transcript;
+            }
+        }
+        resultDiv.innerText = `Texto reconocido: ${transcript}`;
+        // Aquí podríamos añadir lógica para extraer números y rellenar los campos
+    };
+
+    recognition.onerror = (event) => {
+        resultDiv.innerText = `Error en el reconocimiento: ${event.error}`;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    };
+
+    recognition.onend = () => {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        if(resultDiv.innerText === "Escuchando..."){
+            resultDiv.innerText = "";
+        }
+    };
+
+} else {
     startBtn.disabled = true;
-    stopBtn.disabled = false;
-    resultDiv.innerText = "Grabando...";
+    stopBtn.disabled = true;
+    resultDiv.innerText = "El reconocimiento de voz no es compatible con tu navegador.";
+}
 
-  } catch (err) {
-    alert("No se pudo acceder al micrófono: " + err);
-  }
-});
 
-stopBtn.addEventListener("click", () => {
-  mediaRecorder.stop();
-  startBtn.disabled = false;
-  stopBtn.disabled = true;
-  resultDiv.innerText = "";
-});
-
-// Theme toggle
+// Lógica del tema (sin cambios)
 const themeToggle = document.getElementById("theme-toggle");
 const body = document.body;
 
 themeToggle.addEventListener("click", () => {
     body.classList.toggle("dark-mode");
-    if (body.classList.contains("dark-mode")) {
-        localStorage.setItem("theme", "dark");
-    } else {
-        localStorage.setItem("theme", "light");
-    }
+    localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
 });
 
-// Check for saved theme preference
 const savedTheme = localStorage.getItem("theme");
 if (savedTheme === "dark") {
     body.classList.add("dark-mode");
 }
 
+// --- Lógica de la calculadora y almacenamiento en LocalStorage ---
 
-// View interactions
-const viewInteractionsBtn = document.getElementById("viewInteractionsBtn");
-const interactionsContainer = document.getElementById("interactionsContainer");
-
-viewInteractionsBtn.addEventListener("click", async () => {
-    try {
-        const response = await fetch("/interactions");
-        const interactions = await response.json();
-
-        if (interactions.length === 0) {
-            interactionsContainer.innerHTML = "<p>No hay interacciones registradas.</p>";
-            return;
-        }
-
-        let table = `
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Cuenta</th>
-                        <th>Recibido</th>
-                        <th>Cambio</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        interactions.forEach(i => {
-            table += `
-                <tr>
-                    <td>${i.id}</td>
-                    <td>${i.timestamp}</td>
-                    <td>${i.cuenta.toFixed(2)}</td>
-                    <td>${i.recibido.toFixed(2)}</td>
-                    <td>${i.cambio.toFixed(2)}</td>
-                </tr>
-            `;
-        });
-
-        table += "</tbody></table>";
-        interactionsContainer.innerHTML = table;
-
-    } catch (error) {
-        interactionsContainer.innerHTML = "<p>Error al cargar las interacciones.</p>";
-    }
-});
-
-
-// Código JS para formulario calcular cambio
 const calcForm = document.getElementById("calcForm");
 const calcButton = document.getElementById("calcularBtn");
 const mensajeDiv = document.getElementById("mensaje");
+const viewInteractionsBtn = document.getElementById("viewInteractionsBtn");
+const interactionsContainer = document.getElementById("interactionsContainer");
 
-calcForm.addEventListener("submit", async function(event) {
-  event.preventDefault();
-
-  const cuentaInput = document.getElementById("cuenta");
-  const recibidoInput = document.getElementById("recibido");
-
-  if (!cuentaInput.value.trim() || !recibidoInput.value.trim()) {
-    mensajeDiv.classList.remove("d-none", "alert-info");
-    mensajeDiv.classList.add("alert-danger");
-    mensajeDiv.innerText = "Por favor, ingresa ambos valores.";
-    return;
-  }
-
-  calcButton.disabled = true;
-  calcButton.innerText = "Calculando...";
-  mensajeDiv.classList.add("d-none");
-
-  const formData = new FormData(calcForm);
-
-  try {
-    const response = await fetch("/calcular", {
-      method: "POST",
-      body: formData
-    });
-    const data = await response.json();
-
-    if (response.ok) {
-      mensajeDiv.classList.remove("d-none", "alert-danger");
-      mensajeDiv.classList.add("alert-info");
-      mensajeDiv.innerHTML = `El cambio es: <strong>${data.cambio.toFixed(2)} euros</strong>.`;
-    } else {
-      mensajeDiv.classList.remove("d-none", "alert-info");
-      mensajeDiv.classList.add("alert-danger");
-      mensajeDiv.innerText = data.error;
+// Función para calcular el cambio
+function calcularCambio(cuenta, recibido) {
+    if (cuenta <= 0 || recibido <= 0) {
+        return { error: "Los valores deben ser positivos." };
     }
-  } catch (error) {
-    mensajeDiv.classList.remove("d-none", "alert-info");
-    mensajeDiv.classList.add("alert-danger");
-    mensajeDiv.innerText = "Error al conectar con el servidor. Inténtalo de nuevo.";
-  } finally {
-    calcButton.disabled = false;
-    calcButton.innerText = "Calcular Cambio";
-  }
+    if (recibido < cuenta) {
+        return { error: "El dinero recibido es insuficiente." };
+    }
+    const cambio = recibido - cuenta;
+    return { cambio };
+}
+
+// Función para guardar una interacción en LocalStorage
+function guardarInteraccion(interaction) {
+    const interactions = obtenerInteracciones();
+    interactions.push(interaction);
+    localStorage.setItem("interactions", JSON.stringify(interactions));
+}
+
+// Función para obtener todas las interacciones de LocalStorage
+function obtenerInteracciones() {
+    const interactionsJSON = localStorage.getItem("interactions");
+    return interactionsJSON ? JSON.parse(interactionsJSON) : [];
+}
+
+// Event listener para el formulario de cálculo
+calcForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const cuentaInput = document.getElementById("cuenta");
+    const recibidoInput = document.getElementById("recibido");
+
+    if (!cuentaInput.value.trim() || !recibidoInput.value.trim()) {
+        mensajeDiv.className = "alert alert-danger";
+        mensajeDiv.innerText = "Por favor, ingresa ambos valores.";
+        return;
+    }
+
+    const cuenta = parseFloat(cuentaInput.value);
+    const recibido = parseFloat(recibidoInput.value);
+
+    const resultado = calcularCambio(cuenta, recibido);
+
+    if (resultado.error) {
+        mensajeDiv.className = "alert alert-danger";
+        mensajeDiv.innerText = resultado.error;
+    } else {
+        mensajeDiv.className = "alert alert-info";
+        mensajeDiv.innerHTML = `El cambio es: <strong>${resultado.cambio.toFixed(2)} euros</strong>.`;
+
+        // Guardar la interacción
+        const nuevaInteraccion = {
+            id: new Date().getTime(), // ID único basado en el timestamp
+            timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+            cuenta: cuenta,
+            recibido: recibido,
+            cambio: resultado.cambio
+        };
+        guardarInteraccion(nuevaInteraccion);
+    }
+});
+
+// Event listener para ver las interacciones
+viewInteractionsBtn.addEventListener("click", () => {
+    const interactions = obtenerInteracciones();
+
+    if (interactions.length === 0) {
+        interactionsContainer.innerHTML = "<p>No hay interacciones registradas.</p>";
+        return;
+    }
+
+    let table = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Cuenta</th>
+                    <th>Recibido</th>
+                    <th>Cambio</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    interactions.forEach(i => {
+        table += `
+            <tr>
+                <td>${i.id}</td>
+                <td>${i.timestamp}</td>
+                <td>${i.cuenta.toFixed(2)}</td>
+                <td>${i.recibido.toFixed(2)}</td>
+                <td>${i.cambio.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+
+    table += "</tbody></table>";
+    interactionsContainer.innerHTML = table;
 });

@@ -40,7 +40,7 @@ if (SpeechRecognition) {
             }
         }
         resultDiv.innerText = `Texto reconocido: ${transcript}`;
-        // Aquí podríamos añadir lógica para extraer números y rellenar los campos
+        procesarComandoVoz(transcript.toLowerCase());
     };
 
     recognition.onerror = (event) => {
@@ -61,6 +61,31 @@ if (SpeechRecognition) {
     startBtn.disabled = true;
     stopBtn.disabled = true;
     resultDiv.innerText = "El reconocimiento de voz no es compatible con tu navegador.";
+}
+
+function normalizarNumero(texto) {
+    return texto.replace(',', '.');
+}
+
+function procesarComandoVoz(transcript) {
+    const cuentaInput = document.getElementById("cuenta");
+    const recibidoInput = document.getElementById("recibido");
+
+    // Expresiones regulares para buscar "cuenta" y "recibido" y capturar el número que sigue.
+    // Se consideran números enteros o decimales (con coma o punto).
+    const regexCuenta = /cuenta\sde\s([\d,.]+|\d+)/;
+    const regexRecibido = /recibido\sde\s([\d,.]+|\d+)|recibido\s([\d,.]+|\d+)/;
+
+
+    const matchCuenta = transcript.match(regexCuenta);
+    if (matchCuenta && matchCuenta[1]) {
+        cuentaInput.value = normalizarNumero(matchCuenta[1]);
+    }
+
+    const matchRecibido = transcript.match(regexRecibido);
+    if (matchRecibido && (matchRecibido[1] || matchRecibido[2])) {
+        recibidoInput.value = normalizarNumero(matchRecibido[1] || matchRecibido[2]);
+    }
 }
 
 

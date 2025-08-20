@@ -144,6 +144,17 @@ const mensajeDiv = document.getElementById("mensaje");
 const viewInteractionsBtn = document.getElementById("viewInteractionsBtn");
 const interactionsContainer = document.getElementById("interactionsContainer");
 
+// Hablar un texto usando la API de SpeechSynthesis
+function hablar(texto) {
+    // Detener cualquier síntesis de voz anterior para evitar solapamientos
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(texto);
+    utterance.lang = "es-ES"; // Asegurar que hable en español
+    utterance.rate = 1.0; // Velocidad normal
+    window.speechSynthesis.speak(utterance);
+}
+
 // Calcular cambio
 function calcularCambio(cuenta, recibido) {
     if (cuenta <= 0 || recibido <= 0) {
@@ -177,8 +188,10 @@ calcForm.addEventListener("submit", function(event) {
     const recibidoInput = document.getElementById("recibido");
 
     if (!cuentaInput.value.trim() || !recibidoInput.value.trim()) {
+        const mensaje = "Por favor, ingresa ambos valores.";
         mensajeDiv.className = "alert alert-danger";
-        mensajeDiv.innerText = "Por favor, ingresa ambos valores.";
+        mensajeDiv.innerText = mensaje;
+        hablar(mensaje); // Opcional: también hablar el error
         return;
     }
 
@@ -190,9 +203,13 @@ calcForm.addEventListener("submit", function(event) {
     if (resultado.error) {
         mensajeDiv.className = "alert alert-danger";
         mensajeDiv.innerText = resultado.error;
+        hablar(resultado.error); // Hablar el mensaje de error
     } else {
+        const mensaje = `El cambio es de ${resultado.cambio.toFixed(2)} euros.`;
         mensajeDiv.className = "alert alert-info";
+        // Usamos innerText para que el HTML no se lea literal
         mensajeDiv.innerHTML = `El cambio es: <strong>${resultado.cambio.toFixed(2)} euros</strong>.`;
+        hablar(mensaje); // Hablar el resultado
 
         // Guardar interacción
         const nuevaInteraccion = {

@@ -19,9 +19,8 @@ if (SpeechRecognition) {
             startBtn.disabled = true;
             stopBtn.disabled = false;
             resultDiv.innerText = "Escuchando...";
-        } catch(e) {
-            // Esto puede pasar si el reconocimiento ya ha empezado
-            console.error(e);
+        } catch (e) {
+            console.error(e); // Puede fallar si ya está corriendo
         }
     });
 
@@ -52,44 +51,79 @@ if (SpeechRecognition) {
     recognition.onend = () => {
         startBtn.disabled = false;
         stopBtn.disabled = true;
-        if(resultDiv.innerText === "Escuchando..."){
+        if (resultDiv.innerText === "Escuchando...") {
             resultDiv.innerText = "";
         }
     };
-
 } else {
     startBtn.disabled = true;
     stopBtn.disabled = true;
     resultDiv.innerText = "El reconocimiento de voz no es compatible con tu navegador.";
 }
 
+// --- Funciones de ayuda para procesar comandos de voz ---
+
+// Normalizar números con coma
 function normalizarNumero(texto) {
     return texto.replace(',', '.');
 }
 
+// Convertir palabras a número si es posible (ej: "veinte" -> 20)
+function textoANumero(texto) {
+    const mapa = {
+        "cero": 0, "uno": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
+        "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10,
+        "once": 11, "doce": 12, "trece": 13, "catorce": 14, "quince": 15,
+        "dieciseis": 16, "dieciséis": 16, "diecisiete": 17, "dieciocho": 18, "diecinueve": 19,
+        "veinte": 20, "veintiuno": 21, "veintidos": 22, "veintidós": 22, "veintitres": 23, "veintitrés": 23,
+        "veinticuatro": 24, "veinticinco": 25, "treinta": 30, "cuarenta": 40,
+        "cincuenta": 50, "sesenta": 60, "setenta": 70, "ochenta": 80, "noventa": 90,
+        "cien": 100
+    };
+
+    if (!isNaN(texto)) return parseFloat(texto); // Si ya es número
+    return mapa[texto] ?? null;
+}
+
+// Buscar número después de cierta palabra clave
+function extraerDespuesDe(transcript, triggers) {
+    for (let t of triggers) {
+        if (transcript.includes(t)) {
+            let parte = transcript.split(t)[1].trim();
+            let palabras = parte.split(" ");
+            for (let p of palabras) {
+                let num = textoANumero(p) || parseFloat(normalizarNumero(p));
+                if (!isNaN(num)) return num;
+            }
+        }
+    }
+    return null;
+}
+
+// Procesar lo que se ha reconocido por voz
 function procesarComandoVoz(transcript) {
     const cuentaInput = document.getElementById("cuenta");
     const recibidoInput = document.getElementById("recibido");
 
-    // Expresiones regulares para buscar "cuenta" y "recibido" y capturar el número que sigue.
-    // Se consideran números enteros o decimales (con coma o punto).
-    const regexCuenta = /cuenta\sde\s([\d,.]+|\d+)/;
-    const regexRecibido = /recibido\sde\s([\d,.]+|\d+)|recibido\s([\d,.]+|\d+)/;
+    // Triggers para cada campo
+    const triggersCuenta = ["cuenta"];
+    // Aquí añadimos "dinero" además de "recibido"
+    const triggersRecibido = ["recibido", "recibi", "recibí", "dinero"];
 
-
-    const matchCuenta = transcript.match(regexCuenta);
-    if (matchCuenta && matchCuenta[1]) {
-        cuentaInput.value = normalizarNumero(matchCuenta[1]);
+    // Buscar número para cuenta
+    let valorCuenta = extraerDespuesDe(transcript, triggersCuenta);
+    if (valorCuenta !== null) {
+        cuentaInput.value = valorCuenta;
     }
 
-    const matchRecibido = transcript.match(regexRecibido);
-    if (matchRecibido && (matchRecibido[1] || matchRecibido[2])) {
-        recibidoInput.value = normalizarNumero(matchRecibido[1] || matchRecibido[2]);
+    // Buscar número para recibido
+    let valorRecibido = extraerDespuesDe(transcript, triggersRecibido);
+    if (valorRecibido !== null) {
+        recibidoInput.value = valorRecibido;
     }
 }
 
-
-// Lógica del tema (sin cambios)
+// --- Lógica del tema (oscuro/claro) ---
 const themeToggle = document.getElementById("theme-toggle");
 const body = document.body;
 
@@ -106,12 +140,11 @@ if (savedTheme === "dark") {
 // --- Lógica de la calculadora y almacenamiento en LocalStorage ---
 
 const calcForm = document.getElementById("calcForm");
-const calcButton = document.getElementById("calcularBtn");
 const mensajeDiv = document.getElementById("mensaje");
 const viewInteractionsBtn = document.getElementById("viewInteractionsBtn");
 const interactionsContainer = document.getElementById("interactionsContainer");
 
-// Función para calcular el cambio
+// Calcular cambio
 function calcularCambio(cuenta, recibido) {
     if (cuenta <= 0 || recibido <= 0) {
         return { error: "Los valores deben ser positivos." };
@@ -123,20 +156,20 @@ function calcularCambio(cuenta, recibido) {
     return { cambio };
 }
 
-// Función para guardar una interacción en LocalStorage
+// Guardar interacción
 function guardarInteraccion(interaction) {
     const interactions = obtenerInteracciones();
     interactions.push(interaction);
     localStorage.setItem("interactions", JSON.stringify(interactions));
 }
 
-// Función para obtener todas las interacciones de LocalStorage
+// Obtener interacciones
 function obtenerInteracciones() {
     const interactionsJSON = localStorage.getItem("interactions");
     return interactionsJSON ? JSON.parse(interactionsJSON) : [];
 }
 
-// Event listener para el formulario de cálculo
+// Evento submit del formulario
 calcForm.addEventListener("submit", function(event) {
     event.preventDefault();
 
@@ -149,8 +182,8 @@ calcForm.addEventListener("submit", function(event) {
         return;
     }
 
-    const cuenta = parseFloat(cuentaInput.value);
-    const recibido = parseFloat(recibidoInput.value);
+    const cuenta = parseFloat(normalizarNumero(cuentaInput.value));
+    const recibido = parseFloat(normalizarNumero(recibidoInput.value));
 
     const resultado = calcularCambio(cuenta, recibido);
 
@@ -161,9 +194,9 @@ calcForm.addEventListener("submit", function(event) {
         mensajeDiv.className = "alert alert-info";
         mensajeDiv.innerHTML = `El cambio es: <strong>${resultado.cambio.toFixed(2)} euros</strong>.`;
 
-        // Guardar la interacción
+        // Guardar interacción
         const nuevaInteraccion = {
-            id: new Date().getTime(), // ID único basado en el timestamp
+            id: new Date().getTime(),
             timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
             cuenta: cuenta,
             recibido: recibido,
@@ -173,7 +206,7 @@ calcForm.addEventListener("submit", function(event) {
     }
 });
 
-// Event listener para ver las interacciones
+// Ver interacciones
 viewInteractionsBtn.addEventListener("click", () => {
     const interactions = obtenerInteracciones();
 
@@ -211,3 +244,4 @@ viewInteractionsBtn.addEventListener("click", () => {
     table += "</tbody></table>";
     interactionsContainer.innerHTML = table;
 });
+

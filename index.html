@@ -155,14 +155,44 @@
         }
     </style>
     <link rel="stylesheet" href="static/dark-mode.css">
+    <script src="static/authService.js"></script>
+    <script>
+        // Protect the route
+        if (!authService.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <style>
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        #logoutBtn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        body.dark-mode #logoutBtn {
+            border-color: #555;
+            color: #e0e0e0;
+        }
+    </style>
 </head>
 <body>
     <header>
         <img src="https://www.once.es/comunicacion/galeria-multimedia/logos-once/once-responsive-rgb-png/image" alt="Logo de la ONCE">
-        <button id="theme-toggle" aria-label="Toggle dark mode">
-            <span class="sun-icon" aria-hidden="true">☀️</span>
-            <span class="moon-icon" aria-hidden="true">🌙</span>
-        </button>
+        <div class="header-controls">
+            <button id="theme-toggle" aria-label="Toggle dark mode">
+                <span class="sun-icon" aria-hidden="true">☀️</span>
+                <span class="moon-icon" aria-hidden="true">🌙</span>
+            </button>
+            <button id="logoutBtn">Cerrar Sesión</button>
+        </div>
     </header>
     <h1>Calculadora de Cambio</h1>
 

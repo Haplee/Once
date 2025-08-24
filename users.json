@@ -1,0 +1,9 @@
+{
+  "note": "This is an insecure, temporary user database for demonstration purposes only. Do not use in a production environment.",
+  "users": [
+    {
+      "username": "user",
+      "password": "password"
+    }
+  ]
+}

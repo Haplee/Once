@@ -1,8 +1,16 @@
-// --- Lógica de reconocimiento de voz con Web Speech API ---
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Lógica de Autenticación ---
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            authService.logout();
+        });
+    }
 
-const startBtn = document.getElementById("startRecording");
-const stopBtn = document.getElementById("stopRecording");
-const resultDiv = document.getElementById("voiceResult");
+    // --- Lógica de reconocimiento de voz con Web Speech API ---
+    const startBtn = document.getElementById("startRecording");
+    const stopBtn = document.getElementById("stopRecording");
+    const resultDiv = document.getElementById("voiceResult");
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
@@ -260,5 +268,6 @@ viewInteractionsBtn.addEventListener("click", () => {
 
     table += "</tbody></table>";
     interactionsContainer.innerHTML = table;
+});
 });
 

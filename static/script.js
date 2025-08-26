@@ -90,7 +90,9 @@ function textoANumero(texto) {
     };
 
     if (!isNaN(texto)) return parseFloat(texto); // Si ya es número
-    return mapa[texto] ?? null;
+    // Usamos hasOwnProperty para asegurar que la clave existe en el mapa
+    // y evitamos el operador '??' para mayor compatibilidad.
+    return mapa.hasOwnProperty(texto) ? mapa[texto] : null;
 }
 
 // Buscar número después de cierta palabra clave
@@ -154,13 +156,19 @@ const interactionsContainer = document.getElementById("interactionsContainer");
 
 // Hablar un texto usando la API de SpeechSynthesis
 function hablar(texto) {
-    // Detener cualquier síntesis de voz anterior para evitar solapamientos
-    window.speechSynthesis.cancel();
+    // Comprobar si la API de Síntesis de Voz es compatible
+    if ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window) {
+        // Detener cualquier síntesis de voz anterior para evitar solapamientos
+        window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(texto);
-    utterance.lang = "es-ES"; // Asegurar que hable en español
-    utterance.rate = 1.0; // Velocidad normal
-    window.speechSynthesis.speak(utterance);
+        const utterance = new SpeechSynthesisUtterance(texto);
+        utterance.lang = "es-ES"; // Asegurar que hable en español
+        utterance.rate = 1.0; // Velocidad normal
+        window.speechSynthesis.speak(utterance);
+    } else {
+        // La API no es compatible, no hacer nada o registrar un mensaje
+        console.warn("La API de Síntesis de Voz no es compatible con este navegador.");
+    }
 }
 
 // Calcular cambio

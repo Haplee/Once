@@ -14,6 +14,9 @@
     --button-bg: var(--primary-color);
     --button-text: #ffffff;
     --button-hover-bg: var(--primary-color-darker);
+
+    --button-green-bg: #28a745;
+    --button-green-hover-bg: #218838;
 }
 
 /* --- Estilos Base --- */
@@ -39,7 +42,7 @@ a {
 
 /* --- Barra Lateral (Sidebar) --- */
 .sidebar {
-    width: 260px;
+    width: 220px; /* <-- Ancho reducido como se solicitó */
     background-color: var(--sidebar-bg);
     color: var(--sidebar-text);
     display: flex;
@@ -50,7 +53,9 @@ a {
 }
 
 .sidebar-header {
-    padding: 1.5rem;
+
+    padding: 1.5rem 1rem;
+
     text-align: center;
     border-bottom: 1px solid #4a5a6a;
 }
@@ -68,7 +73,9 @@ a {
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 0.9rem 1.5rem;
+
+    padding: 0.8rem 1.5rem; /* Menos padding vertical */
+
     color: var(--sidebar-text);
     transition: background-color 0.2s ease, color 0.2s ease;
     cursor: pointer;
@@ -76,7 +83,7 @@ a {
     background: none;
     width: 100%;
     text-align: left;
-    font-size: 1rem;
+    font-size: 0.95rem; /* Fuente ligeramente más pequeña */
 }
 
 .nav-item:hover {
@@ -91,9 +98,9 @@ a {
 }
 
 .nav-icon {
-    margin-right: 15px;
-    font-size: 1.2rem;
-    width: 24px;
+    margin-right: 12px;
+    font-size: 1.1rem;
+    width: 20px;
     text-align: center;
 }
 
@@ -107,13 +114,22 @@ a {
 }
 
 /* --- Contenido Principal --- */
-.main-content {
+
+.main-content, .page-container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     height: 100vh;
     overflow-y: auto;
 }
+.main-content {
+    margin-left: 220px; /* <-- Coincide con el ancho de la sidebar */
+}
+.page-container {
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
 
 .main-header {
     display: flex;
@@ -125,27 +141,22 @@ a {
     flex-shrink: 0;
 }
 
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+.page-container .main-header {
+    padding: 0 0 1.5rem 0;
+    background-color: transparent;
+    border-bottom: none;
 }
 
-#theme-toggle {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-    color: var(--text-secondary);
-}
-
-/* --- Cuadrícula del Dashboard --- */
-.dashboard-grid {
+/* --- Cuadrícula del Dashboard y Settings --- */
+.dashboard-grid, .settings-grid {
     padding: 2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
     flex-grow: 1;
+}
+.settings-grid {
+    padding: 0;
 }
 
 /* --- Tarjetas Widget --- */
@@ -159,19 +170,18 @@ a {
     flex-direction: column;
 }
 
-.widget-card.wide {
-    grid-column: 1 / -1; /* Ocupa todo el ancho */
-}
 
 .widget-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     border-bottom: 1px solid var(--card-border);
     padding-bottom: 0.75rem;
 }
 
-/* --- Estilos de Formularios --- */
+
+/* --- Estilos de Formularios y Botones --- */
+
 label {
     display: block;
     margin-bottom: 0.5rem;
@@ -179,7 +189,8 @@ label {
     color: var(--text-secondary);
 }
 
-input[type="number"] {
+
+input[type="number"], input[type="password"], input[type="text"], select {
     width: 100%;
     padding: 0.75rem;
     margin-bottom: 1rem;
@@ -189,26 +200,44 @@ input[type="number"] {
     font-size: 1rem;
 }
 
-button {
+
+button, .button-link {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
     font-weight: 600;
-    background-color: var(--button-bg);
     color: var(--button-text);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     width: 100%;
     transition: background-color 0.2s ease;
+
+    text-decoration: none;
+}
+
+button {
+    background-color: var(--button-bg);
 }
 
 button:hover {
     background-color: var(--button-hover-bg);
 }
 
-#voiceControls {
-    display: flex;
-    gap: 1rem;
+
+#dispenseBtn {
+    background-color: var(--button-green-bg);
+}
+#dispenseBtn:hover {
+    background-color: var(--button-green-hover-bg);
+}
+
+.button-link {
+    background-color: var(--button-bg);
+    display: inline-block;
+    width: auto;
+}
+.button-link:hover {
+    background-color: var(--button-hover-bg);
 }
 
 #mensaje {
@@ -218,151 +247,24 @@ button:hover {
     font-weight: 500;
 }
 
-#mensaje.alert-info {
-    background-color: #e6f7ff;
-    color: #005f8d;
-}
-#mensaje.alert-danger {
-    background-color: #fff0f0;
-    color: #d93030;
-}
+#mensaje.alert-info { background-color: #e6f7ff; color: #005f8d; }
+#mensaje.alert-danger { background-color: #fff0f0; color: #d93030; }
 
 /* --- Tabla de Interacciones --- */
-#interactionsContainer table {
+.table {
+
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
 }
 
-#interactionsContainer th, #interactionsContainer td {
+.table th, .table td {
+
     padding: 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--card-border);
 }
 
-#interactionsContainer th {
+.table th {
     background-color: #f8f9fa;
 }
-
-/* --- Media Queries para Responsividad --- */
-@media (max-width: 768px) {
-    body {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: static;
-        flex-direction: row;
-        align-items: center;
-        padding: 0 1rem;
-    }
-
-    .sidebar-header, .sidebar-footer {
-        display: none;
-    }
-
-    .sidebar-nav {
-        display: flex;
-        justify-content: space-around;
-        width: 100%;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    .dashboard-grid {
-        padding: 1rem;
-        grid-template-columns: 1fr;
-    }
-
-    .main-header {
-        padding: 1rem;
-    }
-}
-
-/* --- Estilos de la Página de Login --- */
-
-body.login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: var(--main-bg);
-}
-
-.login-container {
-    max-width: 420px;
-    width: 100%;
-    padding: 1rem;
-}
-
-.login-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.login-header img {
-    max-width: 100px;
-    margin-bottom: 1rem;
-}
-
-.login-header h1 {
-    font-size: 1.5rem;
-    margin: 0;
-}
-
-#error-message {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 4px;
-    font-weight: 500;
-    color: #d93030;
-    background-color: #fff0f0;
-    text-align: center;
-}
-
-/* --- Estilos para Dark Mode --- */
-body.dark-mode {
-    --primary-color: #5fa8ff;
-    --primary-color-darker: #3a91ff;
-    --sidebar-bg: #1f2937;
-    --sidebar-text: #aeb9c5;
-    --main-bg: #111827;
-    --card-bg: #1f2937;
-    --card-border: #374151;
-    --text-primary: #f9fafb;
-    --text-secondary: #9ca3af;
-    --button-bg: var(--primary-color);
-    --button-hover-bg: var(--primary-color-darker);
-}
-
-body.dark-mode input[type="number"],
-body.dark-mode input[type="text"],
-body.dark-mode input[type="password"] {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: var(--text-primary);
-}
-
-body.dark-mode #interactionsContainer th {
-    background-color: #374151;
-}
-
-body.dark-mode #mensaje.alert-info {
-    background-color: #1e40af;
-    color: #dbeafe;
-}
-body.dark-mode #mensaje.alert-danger {
-    background-color: #991b1b;
-    color: #fecaca;
-}
-
-/* --- Visibilidad de Iconos de Tema --- */
-.sun-icon { display: none; }
-.moon-icon { display: inline-block; }
-
-body.dark-mode .sun-icon { display: inline-block; }
-body.dark-mode .moon-icon { display: none; }

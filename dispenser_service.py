@@ -5,8 +5,7 @@ import logging
 # Configurar logging básico para ver las órdenes en la consola del servidor
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = Flask(__name__)
-# Habilitar CORS para permitir peticiones desde el frontend (que se sirve desde un origen diferente)
+# Habilitar CORS para permitir peticiones desde el frontend
 CORS(app)
 
 @app.route('/api/dispense', methods=['POST'])
@@ -31,15 +30,11 @@ def dispense_coins():
             return jsonify({"status": "error", "message": "El monto a dispensar debe ser un número positivo."}), 400
 
         # --- SIMULACIÓN DE INTERACCIÓN CON HARDWARE ---
-        # En una implementación real, aquí iría el código que controla los pines GPIO
-        # de una Raspberry Pi o envía una señal serial a un Arduino.
-
+        # En una implementación real, aquí iría el código que controla el hardware.
         log_message = f"ORDEN DE HARDWARE: Dispensar {amount_float:.2f} euros."
         logging.info(log_message)
-        print(log_message) # Imprimir también en consola para visibilidad inmediata
+        print(log_message)
 
-        # Aquí se podría añadir lógica para confirmar que el hardware ha completado la tarea.
-        # Por ahora, asumimos que la orden se ejecuta instantáneamente.
         # --- FIN DE LA SIMULACIÓN ---
 
         return jsonify({
@@ -52,7 +47,4 @@ def dispense_coins():
         return jsonify({"status": "error", "message": "El monto debe ser un número válido."}), 400
 
 if __name__ == '__main__':
-    # Escuchar en 0.0.0.0 para ser accesible desde cualquier dispositivo en la red local.
-    # El puerto 5000 es el estándar de Flask.
-    # debug=True es útil para desarrollo, pero debería ser False en producción.
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -70,7 +70,6 @@ a {
 .nav-item {
     display: flex;
     align-items: center;
-
     padding: 0.8rem 1.5rem; /* Menos padding vertical */
     color: var(--sidebar-text);
     transition: background-color 0.2s ease, color 0.2s ease;
@@ -172,7 +171,6 @@ a {
     padding-bottom: 0.75rem;
 }
 
-
 label {
     display: block;
     margin-bottom: 0.5rem;
@@ -242,11 +240,12 @@ button:hover {
 
 /* --- Tabla de Interacciones --- */
 .table {
-
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
 }
+
+.table th, .table td {
 
     padding: 0.75rem;
     text-align: left;
@@ -302,7 +301,6 @@ body.login-page {
     display: none; /* Oculto por defecto */
 }
 
-
 /* --- Media Queries para Responsividad --- */
 @media (max-width: 768px) {
     body {
@@ -337,10 +335,6 @@ body.login-page {
 
     .nav-icon {
         margin-right: 8px;
-    }
-
-    .nav-item span {
-        display: none; /* Ocultar texto, mostrar solo iconos */
     }
 
     .nav-item .nav-icon {

@@ -23,27 +23,14 @@ function initAuthControls() {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', () => authService.logout());
-
     }
 }
 
-    }
-}
 
 function initCalculator() {
     const calcForm = document.getElementById("calcForm");
     const mensajeDiv = document.getElementById("mensaje");
     const dispenseBtn = document.getElementById("dispenseBtn");
-
-
-    if (!calcForm || !mensajeDiv || !dispenseBtn) return;
-
-    calcForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        dispenseBtn.style.display = 'none';
-
-        const cuentaInput = document.getElementById("cuenta");
-        const recibidoInput = document.getElementById("recibido");
 
     if (!calcForm || !mensajeDiv || !dispenseBtn) return;
 
@@ -160,6 +147,20 @@ async function dispenseChange(amount) {
 function calcularCambio(cuenta, recibido) {
     if (recibido < cuenta) return { error: "El dinero recibido es insuficiente." };
     return { cambio: recibido - cuenta };
+}
+
+function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
+    const mensajeDiv = document.getElementById("mensaje");
+    mensajeDiv.className = `alert alert-${tipo}`;
+    mensajeDiv.innerHTML = mensaje;
+    if (hablarMsg) {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = mensaje;
+        hablar(tempDiv.textContent || "");
+    }
+}
+
+
 
 }
 
@@ -174,19 +175,6 @@ function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
     }
 }
 
-=======
-}
-
-function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
-    const mensajeDiv = document.getElementById("mensaje");
-    mensajeDiv.className = `alert alert-${tipo}`;
-    mensajeDiv.innerHTML = mensaje;
-    if (hablarMsg) {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = mensaje;
-        hablar(tempDiv.textContent || "");
-    }
-}
 
 function hablar(texto) {
     if ('speechSynthesis' in window) {

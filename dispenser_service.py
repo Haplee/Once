@@ -5,7 +5,6 @@ import logging
 # Configurar logging básico para ver las órdenes en la consola del servidor
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-app = Flask(__name__)
 # Habilitar CORS para permitir peticiones desde el frontend
 CORS(app)
 
@@ -35,6 +34,7 @@ def dispense_coins():
         log_message = f"ORDEN DE HARDWARE: Dispensar {amount_float:.2f} euros."
         logging.info(log_message)
         print(log_message)
+
         # --- FIN DE LA SIMULACIÓN ---
 
         return jsonify({

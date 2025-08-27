@@ -14,6 +14,7 @@
     --button-bg: var(--primary-color);
     --button-text: #ffffff;
     --button-hover-bg: var(--primary-color-darker);
+
     --button-green-bg: #28a745;
     --button-green-hover-bg: #218838;
 }
@@ -52,7 +53,9 @@ a {
 }
 
 .sidebar-header {
+
     padding: 1.5rem 1rem;
+
     text-align: center;
     border-bottom: 1px solid #4a5a6a;
 }
@@ -70,7 +73,9 @@ a {
 .nav-item {
     display: flex;
     align-items: center;
+
     padding: 0.8rem 1.5rem; /* Menos padding vertical */
+
     color: var(--sidebar-text);
     transition: background-color 0.2s ease, color 0.2s ease;
     cursor: pointer;
@@ -109,6 +114,7 @@ a {
 }
 
 /* --- Contenido Principal --- */
+
 .main-content, .page-container {
     flex-grow: 1;
     display: flex;
@@ -123,6 +129,7 @@ a {
     padding: 2rem;
     box-sizing: border-box;
 }
+
 
 .main-header {
     display: flex;
@@ -163,6 +170,7 @@ a {
     flex-direction: column;
 }
 
+
 .widget-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -171,13 +179,16 @@ a {
     padding-bottom: 0.75rem;
 }
 
+
 /* --- Estilos de Formularios y Botones --- */
+
 label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
     color: var(--text-secondary);
 }
+
 
 input[type="number"], input[type="password"], input[type="text"], select {
     width: 100%;
@@ -189,6 +200,7 @@ input[type="number"], input[type="password"], input[type="text"], select {
     font-size: 1rem;
 }
 
+
 button, .button-link {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
@@ -199,15 +211,18 @@ button, .button-link {
     cursor: pointer;
     width: 100%;
     transition: background-color 0.2s ease;
+
     text-decoration: none;
 }
 
 button {
     background-color: var(--button-bg);
 }
+
 button:hover {
     background-color: var(--button-hover-bg);
 }
+
 
 #dispenseBtn {
     background-color: var(--button-green-bg);
@@ -231,20 +246,25 @@ button:hover {
     border-radius: 4px;
     font-weight: 500;
 }
+
 #mensaje.alert-info { background-color: #e6f7ff; color: #005f8d; }
 #mensaje.alert-danger { background-color: #fff0f0; color: #d93030; }
 
 /* --- Tabla de Interacciones --- */
 .table {
+
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
 }
+
 .table th, .table td {
+
     padding: 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--card-border);
 }
+
 .table th {
     background-color: #f8f9fa;
 }

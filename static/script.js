@@ -1,8 +1,12 @@
 /**
  * @file script.js
+<<<<<<< HEAD
+ * @description Lógica principal para el dashboard de la intranet (index.html).
+=======
 
  * @description Lógica principal para el dashboard de la intranet (index.html).
 
+>>>>>>> main
  */
 
 // --- Inicializador Principal ---
@@ -10,8 +14,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!authService.isAuthenticated()) {
         window.location.href = 'login.html';
         return;
+<<<<<<< HEAD
     }
+    initAuthControls();
+    initCalculator();
+    initVoiceRecognition();
+    initDispenser();
+});
 
+// --- Inicializadores de Componentes ---
+
+function initAuthControls() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => authService.logout());
+=======
+>>>>>>> main
+    }
+}
+
+<<<<<<< HEAD
+=======
     initAuthControls();
     initCalculator();
     initVoiceRecognition();
@@ -27,12 +50,16 @@ function initAuthControls() {
     }
 }
 
+>>>>>>> main
 function initCalculator() {
     const calcForm = document.getElementById("calcForm");
     const mensajeDiv = document.getElementById("mensaje");
     const dispenseBtn = document.getElementById("dispenseBtn");
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
     if (!calcForm || !mensajeDiv || !dispenseBtn) return;
 
     calcForm.addEventListener("submit", function(event) {
@@ -47,7 +74,10 @@ function initCalculator() {
             return;
         }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
         const cuenta = parseFloat(cuentaInput.value);
         const recibido = parseFloat(recibidoInput.value);
         const resultado = calcularCambio(cuenta, recibido);
@@ -108,7 +138,10 @@ function initVoiceRecognition() {
     };
 }
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> main
 function initDispenser() {
     const dispenseBtn = document.getElementById("dispenseBtn");
     if (dispenseBtn) {
@@ -163,6 +196,8 @@ function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
     }
 }
 
+<<<<<<< HEAD
+=======
 =======
 function initInteractions() {
     const viewBtn = document.getElementById("viewInteractionsBtn");
@@ -237,6 +272,7 @@ function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
     }
 }
 
+>>>>>>> main
 function hablar(texto) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -252,4 +288,7 @@ function guardarInteraccion(interaction) {
     localStorage.setItem("interactions", JSON.stringify(interactions));
     renderInteractions();
 }
+<<<<<<< HEAD
+=======
 
+>>>>>>> main

@@ -34,7 +34,6 @@ def dispense_coins():
         log_message = f"ORDEN DE HARDWARE: Dispensar {amount_float:.2f} euros."
         logging.info(log_message)
         print(log_message)
-
         # --- FIN DE LA SIMULACIÓN ---
 
         return jsonify({

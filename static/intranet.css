@@ -1,0 +1,368 @@
+/* --- Paleta de Colores y Variables Globales --- */
+:root {
+    --primary-color: #007bff;
+    --primary-color-darker: #0056b3;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #ecf0f1;
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: #3498db;
+    --main-bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --button-bg: var(--primary-color);
+    --button-text: #ffffff;
+    --button-hover-bg: var(--primary-color-darker);
+}
+
+/* --- Estilos Base --- */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2, h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100%;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid #4a5a6a;
+}
+
+.sidebar-header h3 {
+    color: var(--sidebar-text);
+    margin: 10px 0 0;
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+    padding-top: 1rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.9rem 1.5rem;
+    color: var(--sidebar-text);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-size: 1rem;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--sidebar-text-hover);
+}
+
+.nav-item.active {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-text-hover);
+    font-weight: bold;
+}
+
+.nav-icon {
+    margin-right: 15px;
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #4a5a6a;
+}
+
+.sidebar-footer #logoutBtn {
+    font-family: inherit;
+}
+
+/* --- Contenido Principal --- */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+}
+
+/* --- Cuadrícula del Dashboard --- */
+.dashboard-grid {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    flex-grow: 1;
+}
+
+/* --- Tarjetas Widget --- */
+.widget-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.widget-card.wide {
+    grid-column: 1 / -1; /* Ocupa todo el ancho */
+}
+
+.widget-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.75rem;
+}
+
+/* --- Estilos de Formularios --- */
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+#voiceControls {
+    display: flex;
+    gap: 1rem;
+}
+
+#mensaje {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+#mensaje.alert-info {
+    background-color: #e6f7ff;
+    color: #005f8d;
+}
+#mensaje.alert-danger {
+    background-color: #fff0f0;
+    color: #d93030;
+}
+
+/* --- Tabla de Interacciones --- */
+#interactionsContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+#interactionsContainer th, #interactionsContainer td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border);
+}
+
+#interactionsContainer th {
+    background-color: #f8f9fa;
+}
+
+/* --- Media Queries para Responsividad --- */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        flex-direction: row;
+        align-items: center;
+        padding: 0 1rem;
+    }
+
+    .sidebar-header, .sidebar-footer {
+        display: none;
+    }
+
+    .sidebar-nav {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .dashboard-grid {
+        padding: 1rem;
+        grid-template-columns: 1fr;
+    }
+
+    .main-header {
+        padding: 1rem;
+    }
+}
+
+/* --- Estilos de la Página de Login --- */
+
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--main-bg);
+}
+
+.login-container {
+    max-width: 420px;
+    width: 100%;
+    padding: 1rem;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-header img {
+    max-width: 100px;
+    margin-bottom: 1rem;
+}
+
+.login-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+#error-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    color: #d93030;
+    background-color: #fff0f0;
+    text-align: center;
+}
+
+/* --- Estilos para Dark Mode --- */
+body.dark-mode {
+    --primary-color: #5fa8ff;
+    --primary-color-darker: #3a91ff;
+    --sidebar-bg: #1f2937;
+    --sidebar-text: #aeb9c5;
+    --main-bg: #111827;
+    --card-bg: #1f2937;
+    --card-border: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --button-bg: var(--primary-color);
+    --button-hover-bg: var(--primary-color-darker);
+}
+
+body.dark-mode input[type="number"],
+body.dark-mode input[type="text"],
+body.dark-mode input[type="password"] {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: var(--text-primary);
+}
+
+body.dark-mode #interactionsContainer th {
+    background-color: #374151;
+}
+
+body.dark-mode #mensaje.alert-info {
+    background-color: #1e40af;
+    color: #dbeafe;
+}
+body.dark-mode #mensaje.alert-danger {
+    background-color: #991b1b;
+    color: #fecaca;
+}
+
+/* --- Visibilidad de Iconos de Tema --- */
+.sun-icon { display: none; }
+.moon-icon { display: inline-block; }
+
+body.dark-mode .sun-icon { display: inline-block; }
+body.dark-mode .moon-icon { display: none; }

@@ -14,10 +14,6 @@
     --button-bg: var(--primary-color);
     --button-text: #ffffff;
     --button-hover-bg: var(--primary-color-darker);
-<<<<<<< HEAD
-=======
-
->>>>>>> main
     --button-green-bg: #28a745;
     --button-green-hover-bg: #218838;
 }
@@ -56,13 +52,7 @@ a {
 }
 
 .sidebar-header {
-<<<<<<< HEAD
     padding: 1.5rem 1rem;
-=======
-
-    padding: 1.5rem 1rem;
-
->>>>>>> main
     text-align: center;
     border-bottom: 1px solid #4a5a6a;
 }
@@ -80,13 +70,8 @@ a {
 .nav-item {
     display: flex;
     align-items: center;
-<<<<<<< HEAD
-    padding: 0.8rem 1.5rem; /* Menos padding vertical */
-=======
 
     padding: 0.8rem 1.5rem; /* Menos padding vertical */
-
->>>>>>> main
     color: var(--sidebar-text);
     transition: background-color 0.2s ease, color 0.2s ease;
     cursor: pointer;
@@ -125,10 +110,6 @@ a {
 }
 
 /* --- Contenido Principal --- */
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .main-content, .page-container {
     flex-grow: 1;
     display: flex;
@@ -144,10 +125,6 @@ a {
     box-sizing: border-box;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -187,10 +164,6 @@ a {
     flex-direction: column;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 .widget-title {
     margin-top: 0;
     margin-bottom: 1.5rem;
@@ -199,13 +172,7 @@ a {
     padding-bottom: 0.75rem;
 }
 
-<<<<<<< HEAD
-/* --- Estilos de Formularios y Botones --- */
-=======
 
-/* --- Estilos de Formularios y Botones --- */
-
->>>>>>> main
 label {
     display: block;
     margin-bottom: 0.5rem;
@@ -213,10 +180,7 @@ label {
     color: var(--text-secondary);
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 input[type="number"], input[type="password"], input[type="text"], select {
     width: 100%;
     padding: 0.75rem;
@@ -227,10 +191,7 @@ input[type="number"], input[type="password"], input[type="text"], select {
     font-size: 1rem;
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 button, .button-link {
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
@@ -241,28 +202,18 @@ button, .button-link {
     cursor: pointer;
     width: 100%;
     transition: background-color 0.2s ease;
-<<<<<<< HEAD
-=======
-
->>>>>>> main
     text-decoration: none;
 }
 
 button {
     background-color: var(--button-bg);
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 button:hover {
     background-color: var(--button-hover-bg);
 }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 #dispenseBtn {
     background-color: var(--button-green-bg);
 }
@@ -285,35 +236,23 @@ button:hover {
     border-radius: 4px;
     font-weight: 500;
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> main
 #mensaje.alert-info { background-color: #e6f7ff; color: #005f8d; }
 #mensaje.alert-danger { background-color: #fff0f0; color: #d93030; }
 
 /* --- Tabla de Interacciones --- */
 .table {
-<<<<<<< HEAD
-=======
 
->>>>>>> main
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
 }
-<<<<<<< HEAD
-.table th, .table td {
-=======
 
-.table th, .table td {
-
->>>>>>> main
     padding: 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--card-border);
 }
-<<<<<<< HEAD
+
 .table th {
     background-color: #f8f9fa;
 }
@@ -362,9 +301,75 @@ body.login-page {
     text-align: center;
     display: none; /* Oculto por defecto */
 }
-=======
 
-.table th {
-    background-color: #f8f9fa;
+
+/* --- Media Queries para Responsividad --- */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        height: auto;
+        overflow: auto;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 1rem;
+        box-sizing: border-box;
+    }
+
+    .sidebar-header, .sidebar-footer {
+        display: none; /* Ocultar para simplificar la barra superior */
+    }
+
+    .sidebar-nav {
+        display: flex;
+        flex-direction: row;
+        padding-top: 0;
+    }
+
+    .nav-item {
+        padding: 0.8rem;
+    }
+
+    .nav-icon {
+        margin-right: 8px;
+    }
+
+    .nav-item span {
+        display: none; /* Ocultar texto, mostrar solo iconos */
+    }
+
+    .nav-item .nav-icon {
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+        height: auto;
+    }
+
+    .dashboard-grid, .settings-grid {
+        grid-template-columns: 1fr; /* Apilar widgets en una sola columna */
+        padding: 1rem;
+    }
+
+    .page-container {
+        padding: 1rem;
+    }
+
+    .main-header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .login-container {
+        padding: 1rem;
+        width: 100%;
+        max-width: 100%;
+    }
 }
->>>>>>> main

@@ -1,0 +1,295 @@
+/* --- Paleta de Colores y Variables Globales --- */
+:root {
+    --primary-color: #007bff;
+    --primary-color-darker: #0056b3;
+    --sidebar-bg: #2c3e50;
+    --sidebar-text: #ecf0f1;
+    --sidebar-text-hover: #ffffff;
+    --sidebar-active-bg: #3498db;
+    --main-bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --card-border: #dee2e6;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --button-bg: var(--primary-color);
+    --button-text: #ffffff;
+    --button-hover-bg: var(--primary-color-darker);
+    --button-green-bg: #28a745;
+    --button-green-hover-bg: #218838;
+}
+
+/* --- Estilos Base --- */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--main-bg);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+h1, h2, h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+/* --- Barra Lateral (Sidebar) --- */
+.sidebar {
+    width: 220px; /* <-- Ancho reducido como se solicitó */
+    background-color: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    height: 100%;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid #4a5a6a;
+}
+
+.sidebar-header h3 {
+    color: var(--sidebar-text);
+    margin: 10px 0 0;
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+    padding-top: 1rem;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem; /* Menos padding vertical */
+    color: var(--sidebar-text);
+    transition: background-color 0.2s ease, color 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-size: 0.95rem; /* Fuente ligeramente más pequeña */
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--sidebar-text-hover);
+}
+
+.nav-item.active {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-text-hover);
+    font-weight: bold;
+}
+
+.nav-icon {
+    margin-right: 12px;
+    font-size: 1.1rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid #4a5a6a;
+}
+
+.sidebar-footer #logoutBtn {
+    font-family: inherit;
+}
+
+/* --- Contenido Principal --- */
+.main-content, .page-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+}
+.main-content {
+    margin-left: 220px; /* <-- Coincide con el ancho de la sidebar */
+}
+.page-container {
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+}
+
+.page-container .main-header {
+    padding: 0 0 1.5rem 0;
+    background-color: transparent;
+    border-bottom: none;
+}
+
+/* --- Cuadrícula del Dashboard y Settings --- */
+.dashboard-grid, .settings-grid {
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+    flex-grow: 1;
+}
+.settings-grid {
+    padding: 0;
+}
+
+/* --- Tarjetas Widget --- */
+.widget-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.widget-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.75rem;
+}
+
+/* --- Estilos de Formularios y Botones --- */
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+input[type="number"], input[type="password"], input[type="text"], select {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+button, .button-link {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--button-text);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+button {
+    background-color: var(--button-bg);
+}
+button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+#dispenseBtn {
+    background-color: var(--button-green-bg);
+}
+#dispenseBtn:hover {
+    background-color: var(--button-green-hover-bg);
+}
+
+.button-link {
+    background-color: var(--button-bg);
+    display: inline-block;
+    width: auto;
+}
+.button-link:hover {
+    background-color: var(--button-hover-bg);
+}
+
+#mensaje {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+#mensaje.alert-info { background-color: #e6f7ff; color: #005f8d; }
+#mensaje.alert-danger { background-color: #fff0f0; color: #d93030; }
+
+/* --- Tabla de Interacciones --- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+.table th, .table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--card-border);
+}
+.table th {
+    background-color: #f8f9fa;
+}
+
+/* --- Estilos de la Página de Login --- */
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* Para centrar todo */
+    margin-left: 0; /* Anular el margen del dashboard */
+}
+
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    padding: 2rem;
+}
+
+.login-container .widget-card {
+    padding: 2.5rem;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-header img {
+    max-width: 100px;
+    margin-bottom: 1rem;
+}
+
+.login-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+#error-message {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    color: #d93030;
+    background-color: #fff0f0;
+    text-align: center;
+    display: none; /* Oculto por defecto */
+}

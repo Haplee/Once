@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Historial de Interacciones - Intranet</title>
+    <!-- Este CSS se creará en un paso posterior, pero lo enlazamos ya -->
+    <link rel="stylesheet" href="static/intranet.css">
+    <script src="static/authService.js"></script>
+    <script>
+        // Proteger la ruta, solo usuarios autenticados pueden verla
+        if (!authService.isAuthenticated()) {
+            window.location.href = 'login.html';
+        }
+    </script>
+    <style>
+        /* Estilos temporales hasta que se cree intranet.css */
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f6f9; }
+        .widget-card { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .button-link { background-color: #007bff; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <!-- Layout simple sin sidebar para esta página dedicada -->
+    <div class="page-container">
+        <header class="main-header">
+            <h1>Historial de Interacciones</h1>
+            <a href="index.html" class="button-link">Volver al Dashboard</a>
+        </header>
+
+        <main>
+            <div class="widget-card wide">
+                <h2 class="widget-title">Todas las Transacciones</h2>
+                <div id="interactions-table-container">
+                    <p>Cargando interacciones...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script dedicado para esta página -->
+    <script src="static/interactions.js"></script>
+</body>
+</html>

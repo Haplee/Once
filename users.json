@@ -2,18 +2,22 @@
   "note": "This is an insecure, temporary user database for demonstration purposes only. Do not use in a production environment.",
   "users": [
     {
+      "name": "user",
       "username": "user",
       "password": "password"
     },
     {
+      "name": "admin",
       "username": "admin",
       "password": "admin"
     },
     {
+      "name": "Francisco Vidal",
       "username": "fvb",
       "password": "fvb"
     },
     {
+      "name": "Sara Mateo",
       "username": "smr",
       "password": "smr"
     }

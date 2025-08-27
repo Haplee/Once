@@ -171,13 +171,13 @@ a {
     padding-bottom: 0.75rem;
 }
 
-/* --- Estilos de Formularios y Botones --- */
 label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
     color: var(--text-secondary);
 }
+
 
 input[type="number"], input[type="password"], input[type="text"], select {
     width: 100%;
@@ -188,6 +188,7 @@ input[type="number"], input[type="password"], input[type="text"], select {
     border-radius: 4px;
     font-size: 1rem;
 }
+
 
 button, .button-link {
     padding: 0.75rem 1.5rem;
@@ -205,9 +206,11 @@ button, .button-link {
 button {
     background-color: var(--button-bg);
 }
+
 button:hover {
     background-color: var(--button-hover-bg);
 }
+
 
 #dispenseBtn {
     background-color: var(--button-green-bg);
@@ -231,6 +234,7 @@ button:hover {
     border-radius: 4px;
     font-weight: 500;
 }
+
 #mensaje.alert-info { background-color: #e6f7ff; color: #005f8d; }
 #mensaje.alert-danger { background-color: #fff0f0; color: #d93030; }
 
@@ -240,11 +244,14 @@ button:hover {
     border-collapse: collapse;
     margin-top: 1rem;
 }
+
 .table th, .table td {
+
     padding: 0.75rem;
     text-align: left;
     border-bottom: 1px solid var(--card-border);
 }
+
 .table th {
     background-color: #f8f9fa;
 }

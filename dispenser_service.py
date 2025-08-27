@@ -6,6 +6,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
+
 # Habilitar CORS para permitir peticiones desde el frontend
 CORS(app)
 

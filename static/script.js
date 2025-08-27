@@ -1,6 +1,8 @@
 /**
  * @file script.js
+
  * @description Lógica principal para el dashboard de la intranet (index.html).
+
  */
 
 // --- Inicializador Principal ---
@@ -23,6 +25,7 @@ function initAuthControls() {
         logoutBtn.addEventListener('click', () => authService.logout());
     }
 }
+
 
 function initCalculator() {
     const calcForm = document.getElementById("calcForm");
@@ -157,6 +160,22 @@ function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
     }
 }
 
+
+
+}
+
+function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
+    const mensajeDiv = document.getElementById("mensaje");
+    mensajeDiv.className = `alert alert-${tipo}`;
+    mensajeDiv.innerHTML = mensaje;
+    if (hablarMsg) {
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = mensaje;
+        hablar(tempDiv.textContent || "");
+    }
+}
+
+
 function hablar(texto) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -170,4 +189,6 @@ function guardarInteraccion(interaction) {
     const interactions = JSON.parse(localStorage.getItem("interactions") || "[]");
     interactions.push(interaction);
     localStorage.setItem("interactions", JSON.stringify(interactions));
+    renderInteractions();
 }
+

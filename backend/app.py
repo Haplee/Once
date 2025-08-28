@@ -7,9 +7,9 @@ from functools import wraps
 
 # --- App Initialization ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-# Serve static files from the 'frontend' directory
-app = Flask(__name__, static_folder='../frontend', static_url_path='')
-app.secret_key = os.urandom(24) # Secret key for session management
+# Serve static files from the 'frontend/static' directory
+app = Flask(__name__, static_folder='../frontend/static', static_url_path='/static')
+app.secret_key = os.urandom(24)
 
 # --- Extensions ---
 CORS(app, supports_credentials=True)
@@ -28,7 +28,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            return redirect(url_for('login_page', _external=True))
+            return redirect(url_for('login_page'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -40,6 +40,9 @@ def index_page():
 
 @app.route('/login')
 def login_page():
+    # If user is already logged in, redirect to dashboard
+    if 'user_id' in session:
+        return redirect(url_for('index_page'))
     return send_from_directory('../frontend', 'login.html')
 
 @app.route('/settings')

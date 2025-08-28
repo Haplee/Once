@@ -80,7 +80,17 @@ function initVoiceRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition || !startBtn || !stopBtn || !resultDiv) return;
 
+
     let recognition; // Mover la declaración aquí para que sea accesible en los listeners
+
+    // Ajustar idioma del reconocimiento de voz
+    const currentLanguage = localStorage.getItem('language') || 'es';
+    const recognitionLang = {
+        es: 'es-ES',
+        en: 'en-US',
+        fr: 'fr-FR'
+    }[currentLanguage];
+    recognition.lang = recognitionLang;
 
     startBtn.addEventListener("click", () => {
         // Crear y configurar el objeto de reconocimiento CADA VEZ que se inicia

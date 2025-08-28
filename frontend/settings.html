@@ -4,15 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Configuración - Intranet</title>
-    <!-- Este CSS se creará en un paso posterior, pero lo enlazamos ya -->
-    <link rel="stylesheet" href="static/intranet.css">
-    <script src="static/authService.js"></script>
-    <script>
-        // Proteger la ruta, solo usuarios autenticados pueden verla
-        if (!authService.isAuthenticated()) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <link rel="stylesheet" href="/static/intranet.css">
+    <script src="/static/authService.js"></script>
     <style>
         /* Estilos temporales hasta que se cree intranet.css */
         body { font-family: sans-serif; padding: 20px; background-color: #f4f6f9; }

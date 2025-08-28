@@ -1,31 +1,46 @@
 /**
  * @file script.js
-
- * @description Lógica principal para el dashboard de la intranet (index.html).
-
+ * @description Main logic for the intranet dashboard (index.html).
  */
 
-// --- Inicializador Principal ---
+// --- Main Initializer ---
 document.addEventListener('DOMContentLoaded', () => {
-    if (!authService.isAuthenticated()) {
-        window.location.href = 'login.html';
-        return;
+  // The backend now protects routes, so a client-side redirect is not essential,
+  // but this ensures all scripts dependent on authService run after it has initialized.
+  authService.isAuthenticated().then(isAuthenticated => {
+    if (!isAuthenticated) {
+      // If the auth check fails, the user is likely not logged in.
+      // The backend should have already redirected, but as a fallback:
+      window.location.href = '/login';
+      return;
     }
-    initAuthControls();
-    initCalculator();
-    initVoiceRecognition();
-    initDispenser();
+    // Initialize all components that depend on a logged-in user.
+    initComponents();
+  });
 });
 
-// --- Inicializadores de Componentes ---
-
-function initAuthControls() {
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => authService.logout());
-    }
+// --- Component Initializers ---
+function initComponents() {
+  initAuthControls();
+  initCalculator();
+  initVoiceRecognition();
+  initDispenser();
+  // We can also trigger a manual translation call here if needed,
+  // since i18n.js is loaded and settings.js has set the language.
+  if (window.translatePage) {
+      const currentLanguage = localStorage.getItem('language') || 'es';
+      window.translatePage(currentLanguage);
+  }
 }
 
+function initAuthControls() {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      await authService.logout();
+    });
+  }
+}
 
 function initCalculator() {
     const calcForm = document.getElementById("calcForm");
@@ -60,7 +75,6 @@ function initCalculator() {
             dispenseBtn.style.display = 'block';
             dispenseBtn.dataset.amount = resultado.cambio.toFixed(2);
 
-            // Guardar la interacción en localStorage
             guardarInteraccion({
                 id: new Date().getTime(),
                 timestamp: new Date().toISOString(),
@@ -144,7 +158,7 @@ function initDispenser() {
     }
 }
 
-// --- Funciones de Lógica y Ayuda ---
+// --- Logic and Helper Functions ---
 
 async function dispenseChange(amount) {
     const dispenseBtn = document.getElementById("dispenseBtn");
@@ -152,7 +166,7 @@ async function dispenseChange(amount) {
     dispenseBtn.textContent = 'Dispensando...';
 
     try {
-        const response = await fetch('http://localhost:5000/api/dispense', {
+        const response = await fetch('/api/dispense', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ amount: parseFloat(amount) }),
@@ -188,22 +202,6 @@ function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
     }
 }
 
-
-
-}
-
-function mostrarMensaje(mensaje, tipo, hablarMsg = true) {
-    const mensajeDiv = document.getElementById("mensaje");
-    mensajeDiv.className = `alert alert-${tipo}`;
-    mensajeDiv.innerHTML = mensaje;
-    if (hablarMsg) {
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = mensaje;
-        hablar(tempDiv.textContent || "");
-    }
-}
-
-
 function hablar(texto) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -226,6 +224,7 @@ function guardarInteraccion(interaction) {
     const interactions = JSON.parse(localStorage.getItem("interactions") || "[]");
     interactions.push(interaction);
     localStorage.setItem("interactions", JSON.stringify(interactions));
-    renderInteractions();
+    if (window.renderInteractions) {
+        renderInteractions();
+    }
 }
-

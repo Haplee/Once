@@ -24,18 +24,19 @@
 [data-theme="dark"] {
     --primary-color: #0d8eff;
     --primary-color-darker: #006dcc;
-    --main-bg: #1a1a1a;
-    --card-bg: #2b2b2b;
-    --card-border: #404040;
-    --text-primary: #f0f0f0;
-    --text-secondary: #a0a0a0;
+    --main-bg: #121212; /* Fondo casi negro para "total dark" */
+    --card-bg: #1e1e1e; /* Tarjetas ligeramente más claras que el fondo */
+    --card-border: #333333; /* Borde sutil */
+    --text-primary: #e0e0e0; /* Texto principal casi blanco */
+    --text-secondary: #b0b0b0; /* Texto secundario más claro para mejor contraste */
     --button-bg: var(--primary-color);
     --button-hover-bg: var(--primary-color-darker);
-    --primary-color-light: #3a3a3a; /* Para fondos de items activos en modo oscuro */
+    --primary-color-light: #2a2a2a; /* Fondo de item activo más oscuro */
 
-    /* Los colores específicos como el verde pueden mantenerse o ajustarse */
-    --button-green-bg: #2a9d47;
-    --button-green-hover-bg: #248a3d;
+    /* Ajustar el color de los inputs y selects */
+    --input-bg: #252525;
+    --input-border: #444444;
+    --input-text: var(--text-primary);
 }
 
 /* --- Estilos Base --- */
@@ -229,9 +230,15 @@ input[type="number"], input[type="password"], input[type="text"], select {
     padding: 0.75rem;
     margin-bottom: 1rem;
     box-sizing: border-box;
-    border: 1px solid #ced4da;
+    border: 1px solid var(--input-border, #ced4da);
     border-radius: 4px;
     font-size: 1rem;
+    background-color: var(--input-bg, #ffffff);
+    color: var(--input-text, var(--text-primary));
+}
+
+[data-theme="dark"] select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23e0e0e0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
 }
 
 

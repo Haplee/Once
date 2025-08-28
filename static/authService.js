@@ -31,7 +31,13 @@ const authService = {
       // In a real application, passwords would be hashed and salted.
       const foundUser = users.find(user => user.username === username && user.password === password);
 
-      return !!foundUser; // Returns true if a user was found, false otherwise
+      if (foundUser) {
+        sessionStorage.setItem('isAuthenticated', 'true');
+        sessionStorage.setItem('currentUser', JSON.stringify(foundUser));
+        return true;
+      }
+
+      return false;
     } catch (error) {
       console.error('An error occurred during the login process:', error);
       return false;
@@ -43,6 +49,7 @@ const authService = {
    */
   logout: function() {
     sessionStorage.removeItem('isAuthenticated');
+    sessionStorage.removeItem('currentUser');
     window.location.href = 'login.html';
   },
 
@@ -52,5 +59,14 @@ const authService = {
    */
   isAuthenticated: function() {
     return sessionStorage.getItem('isAuthenticated') === 'true';
+  },
+
+  /**
+   * Gets the current authenticated user's data.
+   * @returns {object|null} The user object or null if not authenticated.
+   */
+  getCurrentUser: function() {
+    const user = sessionStorage.getItem('currentUser');
+    return user ? JSON.parse(user) : null;
   }
 };

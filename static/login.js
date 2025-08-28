@@ -25,8 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isAuthenticated = await authService.login(username, password);
 
         if (isAuthenticated) {
-          // BUG FIX: Set the session storage item before redirecting.
-          sessionStorage.setItem('isAuthenticated', 'true');
           window.location.href = 'index.html';
         } else {
           errorMessageDiv.textContent = 'Usuario o contraseña incorrectos.';

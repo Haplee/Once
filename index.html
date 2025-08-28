@@ -12,71 +12,66 @@
         }
     </script>
 </head>
-<body>
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <img src="https://www.once.es/comunicacion/galeria-multimedia/logos-once/once-responsive-rgb-png/image" alt="Logo ONCE" style="width: 80px; margin: 0 auto; display: block;">
-            <h3>Intranet</h3>
+<body class="dashboard-page">
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="https://www.once.es/comunicacion/galeria-multimedia/logos-once/once-responsive-rgb-png/image" alt="Logo ONCE" style="width: 60px;">
+            <h1 data-key="dashboard_title">Dashboard Principal</h1>
         </div>
-        <nav class="sidebar-nav">
-            <a href="index.html" class="nav-item active">
+        <nav class="main-nav">
+            <a href="index.html" class="nav-item active" data-key="nav_dashboard">
                 <span class="nav-icon">📊</span>
                 <span>Dashboard</span>
             </a>
-            <a href="settings.html" class="nav-item">
+            <a href="settings.html" class="nav-item" data-key="nav_settings">
                 <span class="nav-icon">⚙️</span>
                 <span>Configuración</span>
             </a>
-        </nav>
-        <div class="sidebar-footer">
-            <button id="logoutBtn" class="nav-item">
+            <button id="logoutBtn" class="nav-item" data-key="nav_logout">
                 <span class="nav-icon">🚪</span>
                 <span>Cerrar Sesión</span>
             </button>
+        </nav>
+        <div class="header-controls">
+            <span data-key="welcome_message">Bienvenido, usuario</span>
         </div>
-    </div>
+    </header>
 
-    <div class="main-content">
-        <header class="main-header">
-            <h1>Dashboard Principal</h1>
-            <div class="header-controls">
-                <span>Bienvenido, usuario</span>
-
-            </div>
-        </header>
-
+    <div class="main-container">
         <main class="dashboard-grid">
             <div class="widget-card" id="calculator-widget">
-                <h2 class="widget-title">Calculadora de Cambio</h2>
+                <h2 class="widget-title" data-key="calculator_title">Calculadora de Cambio</h2>
                 <form id="calcForm">
-                    <label for="cuenta">Cuenta del cliente (€):</label>
+                    <label for="cuenta" data-key="customer_account_label">Cuenta del cliente (€):</label>
                     <input type="number" id="cuenta" name="cuenta" step="0.01" min="0" required />
 
-                    <label for="recibido">Dinero Recibido (€):</label>
+                    <label for="recibido" data-key="money_received_label">Dinero Recibido (€):</label>
                     <input type="number" id="recibido" name="recibido" step="0.01" min="0" required />
 
-                    <button type="submit" id="calcularBtn">Calcular Cambio</button>
+                    <button type="submit" id="calcularBtn" data-key="calculate_change_button">Calcular Cambio</button>
                 </form>
                 <div id="mensaje" role="alert"></div>
-                <button type="button" id="dispenseBtn" style="display: none; margin-top: 10px;">Dispensar Cambio</button>
+                <button type="button" id="dispenseBtn" style="display: none; margin-top: 10px;" data-key="dispense_change_button">Dispensar Cambio</button>
             </div>
             <div class="widget-card" id="voice-widget">
-                <h2 class="widget-title">Control por Voz</h2>
+                <h2 class="widget-title" data-key="voice_control_title">Control por Voz</h2>
                 <div id="voiceControls">
-                    <button id="startRecording">Grabar voz</button>
-                    <button id="stopRecording" disabled>Detener</button>
+                    <button id="startRecording" data-key="record_voice_button">Grabar voz</button>
+                    <button id="stopRecording" disabled data-key="stop_button">Detener</button>
                 </div>
                 <div id="voiceResult" role="status" aria-live="polite"></div>
             </div>
 
             <div class="widget-card" id="interactions-link-widget">
-                <h2 class="widget-title">Historial de Interacciones</h2>
-                <p>Consulta el historial completo de todas las transacciones registradas en el sistema.</p>
-                <a href="interactions.html" class="button-link" style="text-align: center; display: block; margin-top: 20px;">Ver Historial Completo</a>
+                <h2 class="widget-title" data-key="interactions_history_title">Historial de Interacciones</h2>
+                <p data-key="interactions_history_desc">Consulta el historial completo de todas las transacciones registradas en el sistema.</p>
+                <a href="interactions.html" class="button-link" style="text-align: center; display: block; margin-top: 20px;" data-key="view_full_history_button">Ver Historial Completo</a>
             </div>
         </main>
     </div>
 
     <script src="static/script.js"></script>
+    <script src="static/i18n.js"></script>
+    <script src="static/settings.js"></script>
 </body>
 </html>

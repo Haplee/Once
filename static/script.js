@@ -82,8 +82,16 @@ function initVoiceRecognition() {
 
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
-    recognition.lang = "es-ES";
     recognition.interimResults = false;
+
+    // Ajustar idioma del reconocimiento de voz
+    const currentLanguage = localStorage.getItem('language') || 'es';
+    const recognitionLang = {
+        es: 'es-ES',
+        en: 'en-US',
+        fr: 'fr-FR'
+    }[currentLanguage];
+    recognition.lang = recognitionLang;
 
     startBtn.addEventListener("click", () => {
         recognition.start();
@@ -180,7 +188,16 @@ function hablar(texto) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = "es-ES";
+
+        // Ajustar idioma de la síntesis de voz
+        const currentLanguage = localStorage.getItem('language') || 'es';
+        const synthesisLang = {
+            es: 'es-ES',
+            en: 'en-US',
+            fr: 'fr-FR'
+        }[currentLanguage];
+        utterance.lang = synthesisLang;
+
         window.speechSynthesis.speak(utterance);
     }
 }

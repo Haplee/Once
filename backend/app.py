@@ -18,6 +18,7 @@ STATIC_DIR = os.path.join(FRONTEND_DIR, 'static')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 # Serve static files from the absolute path to 'frontend/static'
 app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='/static')
+
 app.secret_key = os.urandom(24)
 
 # --- Extensions ---
@@ -45,6 +46,7 @@ def login_required(f):
 @app.route('/')
 @login_required
 def index_page():
+
     return send_from_directory(FRONTEND_DIR, 'index.html')
 
 @app.route('/login')
@@ -53,15 +55,19 @@ def login_page():
         return redirect(url_for('index_page'))
     return send_from_directory(FRONTEND_DIR, 'login.html')
 
+
 @app.route('/settings')
 @login_required
 def settings_page():
     return send_from_directory(FRONTEND_DIR, 'settings.html')
 
+
 @app.route('/interactions')
 @login_required
 def interactions_page():
+
     return send_from_directory(FRONTEND_DIR, 'interactions.html')
+
 
 # --- API Routes ---
 @app.route('/api/login', methods=['POST'])

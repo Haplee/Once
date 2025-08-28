@@ -25,15 +25,15 @@
     <!-- Layout simple sin sidebar para esta página dedicada -->
     <div class="page-container">
         <header class="main-header">
-            <h1>Historial de Interacciones</h1>
-            <a href="index.html" class="button-link">Volver al Dashboard</a>
+            <h1 data-key="interactions_history_page_title">Historial de Interacciones</h1>
+            <a href="index.html" class="button-link" data-key="back_to_dashboard_button">Volver al Dashboard</a>
         </header>
 
         <main>
             <div class="widget-card wide">
-                <h2 class="widget-title">Todas las Transacciones</h2>
+                <h2 class="widget-title" data-key="all_transactions_title">Todas las Transacciones</h2>
                 <div id="interactions-table-container">
-                    <p>Cargando interacciones...</p>
+                    <p data-key="loading_interactions_message">Cargando interacciones...</p>
                 </div>
             </div>
         </main>
@@ -41,5 +41,7 @@
 
     <!-- Script dedicado para esta página -->
     <script src="static/interactions.js"></script>
+    <script src="static/i18n.js"></script>
+    <script src="static/settings.js"></script>
 </body>
 </html>

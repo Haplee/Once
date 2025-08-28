@@ -80,30 +80,48 @@ function initVoiceRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition || !startBtn || !stopBtn || !resultDiv) return;
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.lang = "es-ES";
-    recognition.interimResults = false;
+    let recognition; // Mover la declaración aquí para que sea accesible en los listeners
 
     startBtn.addEventListener("click", () => {
+        // Crear y configurar el objeto de reconocimiento CADA VEZ que se inicia
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        const currentLanguage = localStorage.getItem('language') || 'es';
+        const recognitionLang = {
+            es: 'es-ES',
+            en: 'en-US',
+            fr: 'fr-FR'
+        }[currentLanguage];
+        recognition.lang = recognitionLang;
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            resultDiv.innerText = `Texto reconocido: ${transcript}`;
+            // Aquí se podría añadir lógica para procesar el comando
+        };
+
+        recognition.onerror = (event) => {
+            resultDiv.innerText = `Error en el reconocimiento: ${event.error}`;
+        };
+
+        recognition.onend = () => {
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        };
+
         recognition.start();
         startBtn.disabled = true;
         stopBtn.disabled = false;
         resultDiv.innerText = "Escuchando...";
     });
 
-    stopBtn.addEventListener("click", () => recognition.stop());
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        resultDiv.innerText = `Texto reconocido: ${transcript}`;
-        // Lógica para procesar comando de voz (simplificada)
-    };
-    recognition.onerror = (event) => resultDiv.innerText = `Error: ${event.error}`;
-    recognition.onend = () => {
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
-    };
+    stopBtn.addEventListener("click", () => {
+        if (recognition) {
+            recognition.stop();
+        }
+    });
 }
 
 function initDispenser() {
@@ -180,7 +198,16 @@ function hablar(texto) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(texto);
-        utterance.lang = "es-ES";
+
+        // Ajustar idioma de la síntesis de voz
+        const currentLanguage = localStorage.getItem('language') || 'es';
+        const synthesisLang = {
+            es: 'es-ES',
+            en: 'en-US',
+            fr: 'fr-FR'
+        }[currentLanguage];
+        utterance.lang = synthesisLang;
+
         window.speechSynthesis.speak(utterance);
     }
 }

@@ -4,15 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Configuración - Intranet</title>
-    <!-- Este CSS se creará en un paso posterior, pero lo enlazamos ya -->
-    <link rel="stylesheet" href="static/intranet.css">
-    <script src="static/authService.js"></script>
-    <script>
-        // Proteger la ruta, solo usuarios autenticados pueden verla
-        if (!authService.isAuthenticated()) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <link rel="stylesheet" href="/static/intranet.css">
+    <script src="/static/authService.js"></script>
     <style>
         /* Estilos temporales hasta que se cree intranet.css */
         body { font-family: sans-serif; padding: 20px; background-color: #f4f6f9; }
@@ -28,49 +21,59 @@
 <body>
     <div class="page-container">
         <header class="main-header">
-            <h1>Configuración</h1>
-            <a href="index.html" class="button-link">Volver al Dashboard</a>
+            <h1 data-key="settings_title">Configuración</h1>
+            <a href="/" class="button-link" data-key="back_to_dashboard_button">Volver al Dashboard</a>
         </header>
 
         <main class="settings-grid">
             <!-- Widget de Gestión de Perfil -->
             <div class="widget-card">
-                <h2 class="widget-title">Gestión de Perfil</h2>
+                <h2 class="widget-title" data-key="profile_management_title">Gestión de Perfil</h2>
                 <form id="profileForm" onsubmit="alert('Funcionalidad no implementada'); return false;">
-                    <label for="newPassword">Nueva Contraseña:</label>
+                    <label for="newPassword" data-key="new_password_label">Nueva Contraseña:</label>
                     <input type="password" id="newPassword" name="newPassword" placeholder="Introduce la nueva contraseña">
-                    <label for="confirmPassword">Confirmar Contraseña:</label>
+                    <label for="confirmPassword" data-key="confirm_password_label">Confirmar Contraseña:</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirma la nueva contraseña">
-                    <button type="submit">Guardar Contraseña</button>
+                    <button type="submit" data-key="save_password_button">Guardar Contraseña</button>
                 </form>
             </div>
 
             <!-- Widget de Preferencias de la Interfaz -->
             <div class="widget-card">
-                <h2 class="widget-title">Preferencias de la Interfaz</h2>
-                <form id="interfaceForm" onsubmit="alert('Funcionalidad no implementada'); return false;">
-                    <label for="language">Idioma:</label>
-                    <select id="language" name="language">
-                        <option value="es" selected>Español</option>
-                        <option value="en">Inglés</option>
-                        <option value="fr">Francés</option>
-                    </select>
-                    <button type="submit">Guardar Preferencias</button>
+                <h2 class="widget-title" data-key="preferences_title">Preferencias de la Interfaz</h2>
+                <form id="interfaceForm">
+                    <div class="setting-item">
+                        <label for="language" data-key="language_label">Idioma:</label>
+                        <select id="language" name="language">
+                            <option value="es" selected data-key="lang_es">Español</option>
+                            <option value="en" data-key="lang_en">Inglés</option>
+                            <option value="fr" data-key="lang_fr">Francés</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="theme-switch" data-key="dark_mode_label">Modo Oscuro:</label>
+                        <label class="switch">
+                            <input type="checkbox" id="theme-switch">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </form>
             </div>
 
             <!-- Widget de Ajustes del Dispensador -->
             <div class="widget-card">
-                <h2 class="widget-title">Ajustes del Dispensador</h2>
+                <h2 class="widget-title" data-key="dispenser_settings_title">Ajustes del Dispensador</h2>
                 <form id="dispenserSettingsForm" onsubmit="alert('Funcionalidad no implementada'); return false;">
-                    <label for="dispenserApiUrl">URL de la API del Dispensador:</label>
+                    <label for="dispenserApiUrl" data-key="dispenser_api_url_label">URL de la API del Dispensador:</label>
                     <input type="text" id="dispenserApiUrl" name="dispenserApiUrl" value="http://localhost:5000/api/dispense">
-                    <label for="dispenserTimeout">Timeout (segundos):</label>
+                    <label for="dispenserTimeout" data-key="dispenser_timeout_label">Timeout (segundos):</label>
                     <input type="number" id="dispenserTimeout" name="dispenserTimeout" value="10">
-                    <button type="submit">Guardar Ajustes</button>
+                    <button type="submit" data-key="save_settings_button">Guardar Ajustes</button>
                 </form>
             </div>
         </main>
     </div>
+    <script src="/static/i18n.js"></script>
+    <script src="/static/settings.js"></script>
 </body>
 </html>

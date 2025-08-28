@@ -5,10 +5,20 @@ import logging
 import os
 from functools import wraps
 
+# --- Path Setup ---
+# Get the absolute path of the directory where this file is located
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# ../frontend
+FRONTEND_DIR = os.path.join(BASE_DIR, '..', 'frontend')
+# ../frontend/static
+STATIC_DIR = os.path.join(FRONTEND_DIR, 'static')
+
+
 # --- App Initialization ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-# Serve static files from the 'frontend/static' directory
-app = Flask(__name__, static_folder='../frontend/static', static_url_path='/static')
+# Serve static files from the absolute path to 'frontend/static'
+app = Flask(__name__, static_folder=STATIC_DIR, static_url_path='/static')
+
 app.secret_key = os.urandom(24)
 
 # --- Extensions ---
@@ -36,24 +46,28 @@ def login_required(f):
 @app.route('/')
 @login_required
 def index_page():
-    return send_from_directory('../frontend', 'index.html')
+
+    return send_from_directory(FRONTEND_DIR, 'index.html')
 
 @app.route('/login')
 def login_page():
-    # If user is already logged in, redirect to dashboard
     if 'user_id' in session:
         return redirect(url_for('index_page'))
-    return send_from_directory('../frontend', 'login.html')
+    return send_from_directory(FRONTEND_DIR, 'login.html')
+
 
 @app.route('/settings')
 @login_required
 def settings_page():
-    return send_from_directory('../frontend', 'settings.html')
+    return send_from_directory(FRONTEND_DIR, 'settings.html')
+
 
 @app.route('/interactions')
 @login_required
 def interactions_page():
-    return send_from_directory('../frontend', 'interactions.html')
+
+    return send_from_directory(FRONTEND_DIR, 'interactions.html')
+
 
 # --- API Routes ---
 @app.route('/api/login', methods=['POST'])

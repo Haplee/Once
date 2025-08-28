@@ -94,42 +94,24 @@ function initVoiceRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition || !startBtn || !stopBtn || !resultDiv) return;
 
-
-    let recognition; // Mover la declaración aquí para que sea accesible en los listeners
-
-    // Ajustar idioma del reconocimiento de voz
-    const currentLanguage = localStorage.getItem('language') || 'es';
-    const recognitionLang = {
-        es: 'es-ES',
-        en: 'en-US',
-        fr: 'fr-FR'
-    }[currentLanguage];
-    recognition.lang = recognitionLang;
+    let recognition;
 
     startBtn.addEventListener("click", () => {
-        // Crear y configurar el objeto de reconocimiento CADA VEZ que se inicia
         recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
 
         const currentLanguage = localStorage.getItem('language') || 'es';
-        const recognitionLang = {
-            es: 'es-ES',
-            en: 'en-US',
-            fr: 'fr-FR'
-        }[currentLanguage];
+        const recognitionLang = { es: 'es-ES', en: 'en-US', fr: 'fr-FR' }[currentLanguage];
         recognition.lang = recognitionLang;
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             resultDiv.innerText = `Texto reconocido: ${transcript}`;
-            // Aquí se podría añadir lógica para procesar el comando
         };
-
         recognition.onerror = (event) => {
             resultDiv.innerText = `Error en el reconocimiento: ${event.error}`;
         };
-
         recognition.onend = () => {
             startBtn.disabled = false;
             stopBtn.disabled = true;
@@ -207,13 +189,8 @@ function hablar(texto) {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(texto);
 
-        // Ajustar idioma de la síntesis de voz
         const currentLanguage = localStorage.getItem('language') || 'es';
-        const synthesisLang = {
-            es: 'es-ES',
-            en: 'en-US',
-            fr: 'fr-FR'
-        }[currentLanguage];
+        const synthesisLang = { es: 'es-ES', en: 'en-US', fr: 'fr-FR' }[currentLanguage];
         utterance.lang = synthesisLang;
 
         window.speechSynthesis.speak(utterance);

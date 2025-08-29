@@ -155,7 +155,7 @@ async function dispenseChange(amount) {
         });
         const result = await response.json();
         if (response.ok) {
-            mostrarMensaje(`Éxito: ${result.message}`, 'info');
+            mostrarMensaje(result.message, 'info');
         } else {
             mostrarMensaje(`Error: ${result.message}`, 'danger');
         }

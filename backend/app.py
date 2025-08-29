@@ -107,7 +107,7 @@ def dispense_coins():
             return jsonify({"status": "error", "message": "Amount must be positive."}), 400
 
         logging.info(f"Dispensing {amount_float:.2f} euros for user {session.get('user_id')}.")
-        return jsonify({"status": "success", "message": f"Dispensed {amount_float:.2f} euros."})
+        return jsonify({"status": "success", "message": f"Orden para dispensar {amount_float:.2f} euros procesada."})
 
     except (ValueError, TypeError):
         return jsonify({"status": "error", "message": "Invalid amount."}), 400

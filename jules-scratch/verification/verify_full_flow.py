@@ -21,6 +21,8 @@ async def main():
         await expect(page).to_have_title("Dashboard - Intranet")
         await expect(page.get_by_role("heading", name="Dashboard Principal")).to_be_visible()
 
+        await expect(page.get_by_text("Bienvenido, user")).to_be_visible()
+
         # 4. Usar la calculadora
         await page.get_by_label("Cuenta del cliente (€):").fill("10.50")
         await page.get_by_label("Dinero Recibido (€):").fill("20")
@@ -39,7 +41,20 @@ async def main():
         # 7. Verificar el mensaje de éxito del dispensador
         await expect(change_message).to_contain_text("Orden para dispensar 9.50 euros procesada.")
 
-        # 8. Tomar el screenshot
+        # 8. Navegar a settings y activar el modo oscuro
+        await page.get_by_role("link", name="Configuración").click()
+        await expect(page).to_have_url("http://localhost:5000/settings")
+
+        # The input is hidden, so we click the visible slider part of the switch
+        await page.locator("span.slider").click()
+
+        html_element = page.locator("html")
+        await expect(html_element).to_have_attribute("data-theme", "dark")
+
+        # 9. Volver al dashboard y tomar el screenshot
+        await page.get_by_role("link", name="Volver al Dashboard").click()
+        await expect(page).to_have_url("http://localhost:5000/")
+
         screenshot_path = "jules-scratch/verification/verification.png"
         await page.screenshot(path=screenshot_path)
         print(f"Screenshot guardado en: {screenshot_path}")

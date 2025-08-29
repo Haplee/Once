@@ -24,7 +24,13 @@ const authService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     });
-    return response.json();
+    const result = await response.json();
+    if (result.status === 'success' && result.user) {
+      sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+      this._currentUser = result.user;
+      this._isAuthenticated = true;
+    }
+    return result;
   },
 
   /**
@@ -34,6 +40,7 @@ const authService = {
     await fetch('/api/logout', { method: 'POST' });
     this._currentUser = null;
     this._isAuthenticated = false;
+    sessionStorage.removeItem('currentUser');
     // Redirect to login page after logout
     window.location.href = '/login';
   },
@@ -55,11 +62,26 @@ const authService = {
    * Internal function to perform the auth check.
    */
   _checkAuth: async function() {
+    const storedUser = sessionStorage.getItem('currentUser');
+    if (storedUser) {
+        try {
+            this._currentUser = JSON.parse(storedUser);
+            this._isAuthenticated = true;
+            return true;
+        } catch (e) {
+            sessionStorage.removeItem('currentUser');
+        }
+    }
+
     try {
       const response = await fetch('/api/check_auth');
       const data = await response.json();
       this._isAuthenticated = data.isAuthenticated;
       this._currentUser = data.user || null;
+      // If the check is successful, store it for next time to speed up load
+      if (data.isAuthenticated && data.user) {
+          sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+      }
       return this._isAuthenticated;
     } catch (error) {
       console.error('Authentication check failed:', error);
@@ -78,8 +100,3 @@ const authService = {
   }
 };
 
-// Perform an initial authentication check when the script loads.
-// This will populate the authService with user data if a valid session exists.
-document.addEventListener('DOMContentLoaded', () => {
-    authService.isAuthenticated();
-});

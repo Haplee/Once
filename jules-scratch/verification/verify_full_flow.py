@@ -8,7 +8,7 @@ async def main():
         page = await browser.new_page()
 
         # 1. Navegar a la página de login a través del servidor HTTP
-        login_page_url = "http://localhost:8000/login.html"
+        login_page_url = "http://localhost:5000/login"
         await page.goto(login_page_url)
 
         # 2. Realizar el login con las credenciales correctas
@@ -17,8 +17,8 @@ async def main():
         await page.get_by_role("button", name="Acceder").click()
 
         # 3. Esperar a que el dashboard cargue y verificar la URL y el título
-        await expect(page).to_have_url("http://localhost:8000/index.html")
-        await expect(page).to_have_title("Dashboard Corporativo")
+        await expect(page).to_have_url("http://localhost:5000/")
+        await expect(page).to_have_title("Dashboard - Intranet")
         await expect(page.get_by_role("heading", name="Dashboard Principal")).to_be_visible()
 
         # 4. Usar la calculadora
